@@ -7,3 +7,6 @@ def root_redirect(request):
 
 def index (request):
     return render(request, 'index.html')
+
+def budget(request):
+    return render(request, 'app/budget.html')

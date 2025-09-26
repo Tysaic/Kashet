@@ -38,3 +38,33 @@ git push origin main
 1. Configurar git: `git config --global user.name "Tu Nombre"`
 2. Configurar email: `git config --global user.email "tu@email.com"`
 3. Si hay conflictos: `git pull origin main` primero
+
+# Configuración permanente del remoto Git
+
+Este documento describe cómo evitar el error:
+
+```
+remote: {"auth_status":"auth_error","body":"Invalid username or token. Password authentication is not supported for Git operations."}
+```
+
+
+## HTTPS con token (usando un *credential helper*)
+
+> **Ventaja:** Rápido si ya dispones de un Personal Access Token (PAT).  
+> **Requisito:** Un *credential helper* configurado (Windows → `manager-core`, macOS → `osxkeychain`, Linux → `cache` o `store`).
+
+```bash
+# Configura el helper (ejemplo para Windows)
+git config --global credential.helper manager-core   # macOS: osxkeychain ; Linux: cache o store
+
+# Sustituye <TU_USUARIO> y <TU_TOKEN> por tus datos
+git remote set-url origin https://<TU_USUARIO>:<TU_TOKEN>@github.com/<TU_USUARIO>/<REPOSITORIO>.git
+
+# Verifica
+git remote -v
+# > origin  https://<TU_USUARIO>:<TU_TOKEN>@github.com/<TU_USUARIO>/<REPOSITORIO>.git (fetch)
+# > origin  https://<TU_USUARIO>:<TU_TOKEN>@github.com/<TU_USUARIO>/<REPOSITORIO>.git (push)
+
+# Ya puedes hacer push sin volver a introducir credenciales
+git push
+```

@@ -18956,7 +18956,8 @@ ul.widgets-transactions-list li:last-child {
     background: var(--menu-bg);
     box-shadow: none;
     transition: none !important;
-    height: calc(100% - 216px) !important;
+    /*It's delete because the IA box, the navbar is complete height*/
+    /*height: calc(100% - 216px) !important;*/
     inset-block-start: 0;
     inset-inline-end: 0;
     border-inline-end: 0px solid var(--menu-border-color);
