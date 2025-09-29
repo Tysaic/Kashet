@@ -1,0 +1,260 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
+    <h1 class="page-title fw-semibold fs-18 mb-0">Agregar Gasto</h1>
+    <div class="ms-md-1 ms-0">
+      <nav>
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="{% url 'app:index' %}">Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'app:bills' %}">Gastos</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Agregar</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Formulario Principal -->
+    <div class="col-xl-8">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Información del Gasto</div>
+        </div>
+        <div class="card-body">
+          <form>
+            <div class="row g-3">
+              <!-- Nombre y Categoría -->
+              <div class="col-md-6">
+                <label class="form-label">Nombre del Gasto</label>
+                <input type="text" class="form-control" placeholder="Ej: Factura de Electricidad">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Categoría</label>
+                <select class="form-select">
+                  <option selected>Seleccionar categoría</option>
+                  <option value="servicios">Servicios</option>
+                  <option value="suministros">Suministros</option>
+                  <option value="mantenimiento">Mantenimiento</option>
+                  <option value="personal">Personal</option>
+                  <option value="combustible">Combustible</option>
+                </select>
+              </div>
+
+              <!-- Proveedor y Monto -->
+              <div class="col-md-6">
+                <label class="form-label">Proveedor</label>
+                <input type="text" class="form-control" placeholder="Nombre del proveedor">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Monto</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" placeholder="0.00" step="0.01">
+                </div>
+              </div>
+
+              <!-- Fechas -->
+              <div class="col-md-6">
+                <label class="form-label">Fecha del Gasto</label>
+                <input type="date" class="form-control">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Fecha de Vencimiento</label>
+                <input type="date" class="form-control">
+              </div>
+
+              <!-- Método de Pago y Estado -->
+              <div class="col-md-6">
+                <label class="form-label">Método de Pago</label>
+                <select class="form-select">
+                  <option selected>Seleccionar método</option>
+                  <option value="efectivo">Efectivo</option>
+                  <option value="transferencia">Transferencia</option>
+                  <option value="cheque">Cheque</option>
+                  <option value="tarjeta">Tarjeta</option>
+                  <option value="debito_auto">Débito Automático</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Estado</label>
+                <select class="form-select">
+                  <option value="pendiente" selected>Pendiente</option>
+                  <option value="pagado">Pagado</option>
+                  <option value="vencido">Vencido</option>
+                </select>
+              </div>
+
+              <!-- Descripción -->
+              <div class="col-12">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-control" rows="3" placeholder="Descripción detallada del gasto..."></textarea>
+              </div>
+            <!-- Antecedentes / Comprobantes -->
+            <div class="col-12">
+                <label class="form-label">Subir Antecedentes o Comprobantes</label>
+                <div class="input-group">
+                    <input type="file" class="form-control" id="comprobante" multiple>
+                    <label class="input-group-text" for="comprobante">
+                        <i class="ri-upload-2-line"></i> Subir
+                    </label>
+                </div>
+                <small class="text-muted">Formatos permitidos: PDF, JPG, PNG. Máx 5MB por archivo.</small>
+            </div>
+              <!-- Departamento y Prioridad -->
+              <div class="col-md-6">
+                <label class="form-label">Departamento</label>
+                <select class="form-select">
+                  <option selected>Seleccionar departamento</option>
+                  <option value="finanzas">Finanzas</option>
+                  <option value="rrhh">Recursos Humanos</option>
+                  <option value="operaciones">Operaciones</option>
+                  <option value="marketing">Marketing</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Prioridad</label>
+                <select class="form-select">
+                  <option value="baja">Baja</option>
+                  <option value="media" selected>Media</option>
+                  <option value="alta">Alta</option>
+                  <option value="urgente">Urgente</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel Lateral -->
+    <div class="col-xl-4">
+      <!-- Resumen del Gasto -->
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Resumen</div>
+        </div>
+        <div class="card-body">
+          <div class="text-center mb-3">
+            <div class="avatar avatar-xl bg-primary-transparent mx-auto mb-2">
+              <i class="ri-money-dollar-circle-line fs-24"></i>
+            </div>
+            <h4 class="fw-bold text-primary mb-1" id="summary-amount">$0.00</h4>
+            <p class="text-muted mb-0">Monto del Gasto</p>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Estado:</span>
+            <span class="badge bg-warning-transparent" id="summary-status">Pendiente</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Categoría:</span>
+            <span class="fw-semibold" id="summary-category">-</span>
+          </div>
+          <div class="d-flex justify-content-between">
+            <span class="text-muted">Prioridad:</span>
+            <span class="fw-semibold" id="summary-priority">Media</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Configuración Adicional -->
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Opciones</div>
+        </div>
+        <div class="card-body">
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="recurring">
+            <label class="form-check-label" for="recurring">
+              Gasto recurrente
+            </label>
+          </div>
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="notifications" checked>
+            <label class="form-check-label" for="notifications">
+              Notificar vencimiento
+            </label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="approval">
+            <label class="form-check-label" for="approval">
+              Requiere aprobación
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="card custom-card">
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <button type="button" class="btn btn-primary">
+              <i class="ri-save-line me-1"></i>Guardar Gasto
+            </button>
+            <button type="button" class="btn btn-success">
+              <i class="ri-check-line me-1"></i>Guardar y Pagar
+            </button>
+            <button type="button" class="btn btn-light">
+              <i class="ri-draft-line me-1"></i>Guardar como Borrador
+            </button>
+            <a href="{% url 'app:bills' %}" class="btn btn-outline-secondary">
+              <i class="ri-arrow-left-line me-1"></i>Cancelar
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Gastos Recientes -->
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Gastos Recientes</div>
+        </div>
+        <div class="card-body p-0">
+          <div class="list-group list-group-flush">
+            <div class="list-group-item border-0 p-2">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <h6 class="mb-0 fs-12">Electricidad</h6>
+                  <small class="text-muted">Servicios</small>
+                </div>
+                <span class="fw-semibold text-danger">$450.00</span>
+              </div>
+            </div>
+            <div class="list-group-item border-0 p-2">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <h6 class="mb-0 fs-12">Suministros</h6>
+                  <small class="text-muted">Oficina</small>
+                </div>
+                <span class="fw-semibold text-success">$125.50</span>
+              </div>
+            </div>
+            <div class="list-group-item border-0 p-2">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <h6 class="mb-0 fs-12">Internet</h6>
+                  <small class="text-muted">Servicios</small>
+                </div>
+                <span class="fw-semibold text-danger">$180.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+</script>
+{% endblock %}

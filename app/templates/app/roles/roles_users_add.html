@@ -1,0 +1,205 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <!-- Header -->
+  <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
+    <h1 class="page-title fw-semibold fs-18 mb-0">Agregar Usuario</h1>
+    <div class="ms-md-1 ms-0">
+      <nav>
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="{% url 'app:index' %}">Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'app:roles_users' %}">Usuarios</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Agregar</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Formulario Principal -->
+    <div class="col-xl-8">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Información del Usuario</div>
+        </div>
+        <div class="card-body">
+          <form>
+            <div class="row g-3">
+              <!-- Información Personal -->
+              <div class="col-md-6">
+                <label class="form-label">Nombre Completo</label>
+                <input type="text" class="form-control" placeholder="Ej: Juan Pérez">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <input type="email" class="form-control" placeholder="usuario@empresa.com">
+              </div>
+
+              <!-- Credenciales -->
+              <div class="col-md-6">
+                <label class="form-label">Nombre de Usuario</label>
+                <input type="text" class="form-control" placeholder="usuario123">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Contraseña</label>
+                <input type="password" class="form-control" placeholder="••••••••">
+              </div>
+
+              <!-- Rol y Departamento -->
+              <div class="col-md-6">
+                <label class="form-label">Rol</label>
+                <select class="form-select">
+                  <option selected>Seleccionar rol</option>
+                  <option value="admin">Administrador</option>
+                  <option value="user">Usuario</option>
+                  <option value="supervisor">Supervisor</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Departamento</label>
+                <select class="form-select">
+                  <option selected>Seleccionar departamento</option>
+                  <option value="1">Finanzas</option>
+                  <option value="2">Recursos Humanos</option>
+                  <option value="3">Operaciones</option>
+                  <option value="4">Marketing</option>
+                </select>
+              </div>
+
+              <!-- Contacto -->
+              <div class="col-md-6">
+                <label class="form-label">Teléfono</label>
+                <input type="tel" class="form-control" placeholder="+1 234 567 8900">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Estado</label>
+                <select class="form-select">
+                  <option value="active" selected>Activo</option>
+                  <option value="inactive">Inactivo</option>
+                </select>
+              </div>
+
+              <!-- Notas -->
+              <div class="col-12">
+                <label class="form-label">Notas</label>
+                <textarea class="form-control" rows="3" placeholder="Información adicional sobre el usuario..."></textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel Lateral -->
+    <div class="col-xl-4">
+      <!-- Resumen -->
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Vista Previa</div>
+        </div>
+        <div class="card-body text-center">
+          <div class="avatar avatar-xl bg-primary-transparent mb-3">
+            <i class="ri-user-line fs-24"></i>
+          </div>
+          <h6 class="fw-semibold mb-1" id="preview-name">Nuevo Usuario</h6>
+          <p class="text-muted mb-2" id="preview-email">usuario@empresa.com</p>
+          <span class="badge bg-primary-transparent" id="preview-role">Usuario</span>
+        </div>
+      </div>
+
+      <!-- Permisos -->
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Permisos</div>
+        </div>
+        <div class="card-body">
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="perm-read" checked>
+            <label class="form-check-label" for="perm-read">
+              Ver información
+            </label>
+          </div>
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="perm-write">
+            <label class="form-check-label" for="perm-write">
+              Crear/Editar
+            </label>
+          </div>
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="perm-delete">
+            <label class="form-check-label" for="perm-delete">
+              Eliminar registros
+            </label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="perm-admin">
+            <label class="form-check-label" for="perm-admin">
+              Acceso administrativo
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="card custom-card">
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <button type="button" class="btn btn-primary">
+              <i class="ri-user-add-line me-1"></i>Crear Usuario
+            </button>
+            <button type="button" class="btn btn-light">
+              <i class="ri-mail-line me-1"></i>Enviar Credenciales
+            </button>
+            <a href="{% url 'app:roles_users' %}" class="btn btn-outline-secondary">
+              <i class="ri-arrow-left-line me-1"></i>Cancelar
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Usuarios Recientes -->
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Usuarios Recientes</div>
+        </div>
+        <div class="card-body p-0">
+          <div class="list-group list-group-flush">
+            <div class="list-group-item border-0 py-2">
+              <div class="d-flex align-items-center">
+                <div class="avatar avatar-sm bg-success-transparent me-2">
+                  <i class="ri-user-line fs-12"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold fs-13">María García</div>
+                  <div class="text-muted fs-11">Usuario</div>
+                </div>
+              </div>
+            </div>
+            <div class="list-group-item border-0 py-2">
+              <div class="d-flex align-items-center">
+                <div class="avatar avatar-sm bg-warning-transparent me-2">
+                  <i class="ri-user-line fs-12"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold fs-13">Carlos López</div>
+                  <div class="text-muted fs-11">Supervisor</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

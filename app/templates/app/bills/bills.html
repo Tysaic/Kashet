@@ -1,0 +1,354 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <!-- Page Header -->
+  <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
+    <h1 class="page-title fw-semibold fs-18 mb-0">Lista de Gastos</h1>
+    <div class="ms-md-1 ms-0">
+      <nav>
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="{% url 'app:index' %}">Dashboard</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Gastos</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Filtros rápidos -->
+  <div class="row mb-4">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-body p-3">
+          <div class="row g-2 align-items-center">
+            <div class="col-md-3">
+              <select class="form-select form-select-sm">
+                <option selected>Todas las categorías</option>
+                <option value="1">Servicios</option>
+                <option value="2">Suministros</option>
+                <option value="3">Mantenimiento</option>
+                <option value="4">Personal</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <select class="form-select form-select-sm">
+                <option selected>Estado</option>
+                <option value="pagado">Pagado</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="vencido">Vencido</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <input type="search" class="form-control form-control-sm" placeholder="Buscar gastos...">
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-primary btn-sm w-100">
+                <i class="ri-add-line me-1"></i>Nuevo Gasto
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista de Gastos -->
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="card-title">Gastos Recientes</div>
+          <span class="badge bg-primary-transparent">24 gastos</span>
+        </div>
+        <div class="card-body p-0">
+          <!-- Item 1 -->
+          <div class="list-group list-group-flush">
+            <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="d-flex align-items-center">
+                <div class="avatar avatar-sm bg-primary-transparent me-3">
+                  <i class="ri-bill-line fs-14"></i>
+                </div>
+                <div>
+                  <h6 class="mb-1 fw-semibold">Factura de Electricidad</h6>
+                  <p class="mb-0 text-muted fs-12">Pago mensual de servicios eléctricos - Enero 2024</p>
+                  <small class="text-muted">Vence: 15 Feb 2024</small>
+                </div>
+              </div>
+              <div class="text-end">
+                <div class="fw-bold fs-16 text-danger mb-1">$450.00</div>
+                <span class="badge bg-warning-transparent">Pendiente</span>
+                <button class="btn btn-sm btn-light ms-2" data-bs-toggle="collapse" data-bs-target="#details1">
+                  <i class="ri-eye-line"></i>
+                </button>
+              </div>
+            </div>
+            <div class="collapse" id="details1">
+              <div class="card-body bg-light">
+                <div class="row">
+                  <div class="col-md-4">
+                    <strong>Proveedor:</strong> Empresa Eléctrica Nacional
+                  </div>
+                  <div class="col-md-4">
+                    <strong>Categoría:</strong> Servicios
+                  </div>
+                  <div class="col-md-4">
+                    <strong>Método de pago:</strong> Transferencia
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 2 -->
+            <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="d-flex align-items-center">
+                <div class="avatar avatar-sm bg-success-transparent me-3">
+                  <i class="ri-shopping-cart-line fs-14"></i>
+                </div>
+                <div>
+                  <h6 class="mb-1 fw-semibold">Suministros de Oficina</h6>
+                  <p class="mb-0 text-muted fs-12">Papel, bolígrafos, material de oficina</p>
+                  <small class="text-muted">Pagado: 10 Feb 2024</small>
+                </div>
+              </div>
+              <div class="text-end">
+                <div class="fw-bold fs-16 text-success mb-1">$125.50</div>
+                <span class="badge bg-success-transparent">Pagado</span>
+                <button class="btn btn-sm btn-light ms-2" data-bs-toggle="collapse" data-bs-target="#details2">
+                  <i class="ri-eye-line"></i>
+                </button>
+              </div>
+            </div>
+            <div class="collapse" id="details2">
+              <div class="card-body bg-light">
+                <div class="row">
+                  <div class="col-md-4">
+                    <strong>Proveedor:</strong> Papelería Central
+                  </div>
+                  <div class="col-md-4">
+                    <strong>Categoría:</strong> Suministros
+                  </div>
+                  <div class="col-md-4">
+                    <strong>Método de pago:</strong> Efectivo
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 3 -->
+            <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="d-flex align-items-center">
+                <div class="avatar avatar-sm bg-info-transparent me-3">
+                  <i class="ri-tools-line fs-14"></i>
+                </div>
+                <div>
+                  <h6 class="mb-1 fw-semibold">Mantenimiento Equipos</h6>
+                  <p class="mb-0 text-muted fs-12">Servicio técnico para computadoras y impresoras</p>
+                  <small class="text-muted">Vence: 20 Feb 2024</small>
+                </div>
+              </div>
+              <div class="text-end">
+                <div class="fw-bold fs-16 text-danger mb-1">$300.00</div>
+                <span class="badge bg-warning-transparent">Pendiente</span>
+                <button class="btn btn-sm btn-light ms-2" data-bs-toggle="collapse" data-bs-target="#details3">
+                  <i class="ri-eye-line"></i>
+                </button>
+              </div>
+            </div>
+            <div class="collapse" id="details3">
+              <div class="card-body bg-light">
+                <div class="row">
+                  <div class="col-md-4">
+                    <strong>Proveedor:</strong> TechService Pro
+                  </div>
+                  <div class="col-md-4">
+                    <strong>Categoría:</strong> Mantenimiento
+                  </div>
+                  <div class="col-md-4">
+                    <strong>Método de pago:</strong> Cheque
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 4 -->
+            <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="d-flex align-items-center">
+                <div class="avatar avatar-sm bg-warning-transparent me-3">
+                  <i class="ri-user-line fs-14"></i>
+                </div>
+                <div>
+                  <h6 class="mb-1 fw-semibold">Salario Empleados</h6>
+                  <p class="mb-0 text-muted fs-12">Nómina quincenal - Segunda quincena Enero</p>
+                  <small class="text-muted">Pagado: 31 Ene 2024</small>
+                </div>
+              </div>
+              <div class="text-end">
+                <div class="fw-bold fs-16 text-success mb-1">$2,500.00</div>
+                <span class="badge bg-success-transparent">Pagado</span>
+                <button class="btn btn-sm btn-light ms-2" data-bs-toggle="collapse" data-bs-target="#details4">
+                  <i class="ri-eye-line"></i>
+                </button>
+              </div>
+            </div>
+            <div class="collapse" id="details4">
+              <div class="card-body bg-light">
+                <div class="row">
+                  <div class="col-md-4">
+                    <strong>Proveedor:</strong> Recursos Humanos
+                  </div>
+                  <div class="col-md-4">
+                    <strong>Categoría:</strong> Personal
+                  </div>
+                  <div class="col-md-4">
+                    <strong>Método de pago:</strong> Transferencia
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 5 -->
+            <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="d-flex align-items-center">
+                <div class="avatar avatar-sm bg-danger-transparent me-3">
+                  <i class="ri-wifi-line fs-14"></i>
+                </div>
+                <div>
+                  <h6 class="mb-1 fw-semibold">Internet y Telefonía</h6>
+                  <p class="mb-0 text-muted fs-12">Plan empresarial - Febrero 2024</p>
+                  <small class="text-danger">Vencido: 05 Feb 2024</small>
+                </div>
+              </div>
+              <div class="text-end">
+                <div class="fw-bold fs-16 text-danger mb-1">$180.00</div>
+                <span class="badge bg-danger-transparent">Vencido</span>
+                <button class="btn btn-sm btn-light ms-2" data-bs-toggle="collapse" data-bs-target="#details5">
+                  <i class="ri-eye-line"></i>
+                </button>
+              </div>
+            </div>
+            <div class="collapse" id="details5">
+              <div class="card-body bg-light">
+                <div class="row">
+                  <div class="col-md-4">
+                    <strong>Proveedor:</strong> Telecom Solutions
+                  </div>
+                  <div class="col-md-4">
+                    <strong>Categoría:</strong> Servicios
+                  </div>
+                  <div class="col-md-4">
+                    <strong>Método de pago:</strong> Débito automático
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Item 6 -->
+            <div class="list-group-item d-flex justify-content-between align-items-center py-3">
+              <div class="d-flex align-items-center">
+                <div class="avatar avatar-sm bg-secondary-transparent me-3">
+                  <i class="ri-car-line fs-14"></i>
+                </div>
+                <div>
+                  <h6 class="mb-1 fw-semibold">Combustible Vehículos</h6>
+                  <p class="mb-0 text-muted fs-12">Gasolina para flota empresarial</p>
+                  <small class="text-muted">Pagado: 08 Feb 2024</small>
+                </div>
+              </div>
+              <div class="text-end">
+                <div class="fw-bold fs-16 text-success mb-1">$220.75</div>
+                <span class="badge bg-success-transparent">Pagado</span>
+                <button class="btn btn-sm btn-light ms-2" data-bs-toggle="collapse" data-bs-target="#details6">
+                  <i class="ri-eye-line"></i>
+                </button>
+              </div>
+            </div>
+            <div class="collapse" id="details6">
+              <div class="card-body bg-light">
+                <div class="row">
+                  <div class="col-md-4">
+                    <strong>Proveedor:</strong> Estación Shell
+                  </div>
+                  <div class="col-md-4">
+                    <strong>Categoría:</strong> Combustible
+                  </div>
+                  <div class="col-md-4">
+                    <strong>Método de pago:</strong> Tarjeta empresarial
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Paginación -->
+        <div class="card-footer">
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mb-0">
+              <li class="page-item disabled">
+                <span class="page-link">Anterior</span>
+              </li>
+              <li class="page-item active">
+                <span class="page-link">1</span>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#">2</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#">3</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="#">Siguiente</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resumen de Gastos -->
+  <div class="row mt-4">
+    <div class="col-xl-3 col-md-6">
+      <div class="card custom-card">
+        <div class="card-body text-center">
+          <div class="text-muted mb-1">Total Gastos</div>
+          <h4 class="fw-semibold text-primary">$3,776.25</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <div class="card custom-card">
+        <div class="card-body text-center">
+          <div class="text-muted mb-1">Pagados</div>
+          <h4 class="fw-semibold text-success">$2,846.25</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <div class="card custom-card">
+        <div class="card-body text-center">
+          <div class="text-muted mb-1">Pendientes</div>
+          <h4 class="fw-semibold text-warning">$750.00</h4>
+        </div>
+      </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+      <div class="card custom-card">
+        <div class="card-body text-center">
+          <div class="text-muted mb-1">Vencidos</div>
+          <h4 class="fw-semibold text-danger">$180.00</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block styles %}
+<style>
+  .transaction-item {
+    transition: all 0.3s ease;
+  }
+  
+  .transaction-item:hover {
+    transform: translateY(-2px);
+  }
+  
+  .transaction-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+  }
+  
+  .transaction-amount.income {
+    color: var(--success);
+  }
+  
+  .transaction-amount.expense {
+    color: var(--danger);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <!-- Page Header -->
+  <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
+    <h1 class="page-title fw-semibold fs-18 mb-0">Detalles del Presupuesto</h1>
+    <div class="ms-md-1 ms-0">
+      <nav>
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="{% url 'app:index' %}">Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'app:budget' %}">Presupuesto</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Detalles</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Transaction List -->
+  <div class="card custom-card">
+    <div class="card-header">
+      <div class="card-title">Lista de Transacciones</div>
+    </div>
+    <div class="card-body">
+      
+      <!-- Transaction 1 -->
+      <div class="card custom-card transaction-item mb-3">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <img src="https://via.placeholder.com/50x50/28a745/ffffff?text=IN" alt="Ingreso" class="transaction-image me-3">
+            <div class="flex-grow-1">
+              <h6 class="mb-1 fw-semibold">Transferencia Bancaria</h6>
+              <p class="text-muted mb-1 fs-12">Depósito inicial departamento finanzas</p>
+              <small class="text-muted">TXN-2024-001235 | 15 Ene 2024</small>
+            </div>
+            <div class="text-end me-3">
+              <div class="transaction-amount income fw-bold">+$15,000</div>
+              <span class="badge bg-success-transparent">Ingreso</span>
+            </div>
+            <button class="btn btn-sm btn-primary">
+              <i class="ri-eye-line me-1"></i>Ver
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction 2 -->
+      <div class="card custom-card transaction-item mb-3">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <img src="https://via.placeholder.com/50x50/dc3545/ffffff?text=OUT" alt="Gasto" class="transaction-image me-3">
+            <div class="flex-grow-1">
+              <h6 class="mb-1 fw-semibold">Pago a Proveedores</h6>
+              <p class="text-muted mb-1 fs-12">Suministros de oficina y materiales</p>
+              <small class="text-muted">TXN-2024-001234 | 14 Ene 2024</small>
+            </div>
+            <div class="text-end me-3">
+              <div class="transaction-amount expense fw-bold">-$3,500</div>
+              <span class="badge bg-danger-transparent">Gasto</span>
+            </div>
+            <button class="btn btn-sm btn-primary">
+              <i class="ri-eye-line me-1"></i>Ver
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction 3 -->
+      <div class="card custom-card transaction-item mb-3">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <img src="https://via.placeholder.com/50x50/28a745/ffffff?text=IN" alt="Ingreso" class="transaction-image me-3">
+            <div class="flex-grow-1">
+              <h6 class="mb-1 fw-semibold">Depósito Cliente</h6>
+              <p class="text-muted mb-1 fs-12">Servicios de consultoría empresarial</p>
+              <small class="text-muted">TXN-2024-001233 | 13 Ene 2024</small>
+            </div>
+            <div class="text-end me-3">
+              <div class="transaction-amount income fw-bold">+$8,750</div>
+              <span class="badge bg-success-transparent">Ingreso</span>
+            </div>
+            <button class="btn btn-sm btn-primary">
+              <i class="ri-eye-line me-1"></i>Ver
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction 4 -->
+      <div class="card custom-card transaction-item mb-3">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <img src="https://via.placeholder.com/50x50/dc3545/ffffff?text=OUT" alt="Gasto" class="transaction-image me-3">
+            <div class="flex-grow-1">
+              <h6 class="mb-1 fw-semibold">Pago de Nómina</h6>
+              <p class="text-muted mb-1 fs-12">Salarios empleados enero 2024</p>
+              <small class="text-muted">TXN-2024-001232 | 12 Ene 2024</small>
+            </div>
+            <div class="text-end me-3">
+              <div class="transaction-amount expense fw-bold">-$12,000</div>
+              <span class="badge bg-danger-transparent">Gasto</span>
+            </div>
+            <button class="btn btn-sm btn-primary">
+              <i class="ri-eye-line me-1"></i>Ver
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Transaction 5 -->
+      <div class="card custom-card transaction-item mb-3">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <img src="https://via.placeholder.com/50x50/28a745/ffffff?text=IN" alt="Ingreso" class="transaction-image me-3">
+            <div class="flex-grow-1">
+              <h6 class="mb-1 fw-semibold">Venta de Servicios</h6>
+              <p class="text-muted mb-1 fs-12">Facturación mensual cliente corporativo</p>
+              <small class="text-muted">TXN-2024-001231 | 11 Ene 2024</small>
+            </div>
+            <div class="text-end me-3">
+              <div class="transaction-amount income fw-bold">+$22,500</div>
+              <span class="badge bg-success-transparent">Ingreso</span>
+            </div>
+            <button class="btn btn-sm btn-primary">
+              <i class="ri-eye-line me-1"></i>Ver
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

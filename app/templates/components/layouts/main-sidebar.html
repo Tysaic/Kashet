@@ -40,26 +40,61 @@
 									<li class="slide active open">
 										<a href="javascript:void(0);" class="side-menu__item active"> 
 											<svg xmlns="http://www.w3.org/2000/svg" class="side-menu-doublemenu__icon" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><path d="M54.46,201.54c-9.2-9.2-3.1-28.53-7.78-39.85C41.82,150,24,140.5,24,128s17.82-22,22.68-33.69C51.36,83,45.26,63.66,54.46,54.46S83,51.36,94.31,46.68C106.05,41.82,115.5,24,128,24S150,41.82,161.69,46.68c11.32,4.68,30.65-1.42,39.85,7.78s3.1,28.53,7.78,39.85C214.18,106.05,232,115.5,232,128S214.18,150,209.32,161.69c-4.68,11.32,1.42,30.65-7.78,39.85s-28.53,3.1-39.85,7.78C150,214.18,140.5,232,128,232s-22-17.82-33.69-22.68C83,204.64,63.66,210.74,54.46,201.54Z" opacity="0.2"></path><path d="M54.46,201.54c-9.2-9.2-3.1-28.53-7.78-39.85C41.82,150,24,140.5,24,128s17.82-22,22.68-33.69C51.36,83,45.26,63.66,54.46,54.46S83,51.36,94.31,46.68C106.05,41.82,115.5,24,128,24S150,41.82,161.69,46.68c11.32,4.68,30.65-1.42,39.85,7.78s3.1,28.53,7.78,39.85C214.18,106.05,232,115.5,232,128S214.18,150,209.32,161.69c-4.68,11.32,1.42,30.65-7.78,39.85s-28.53,3.1-39.85,7.78C150,214.18,140.5,232,128,232s-22-17.82-33.69-22.68C83,204.64,63.66,210.74,54.46,201.54Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><circle cx="96" cy="96" r="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></circle><circle cx="160" cy="160" r="16" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></circle><line x1="88" y1="168" x2="168" y2="88" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line></svg>
-											Home</a>
+											Resumen
+										</a>
 									</li>
 									<li class="slide has-sub">
 										<a href="javascript:void(0);" class="side-menu__item">
 											<svg xmlns="http://www.w3.org/2000/svg" class="side-menu-doublemenu__icon" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><path d="M128,144a191.14,191.14,0,0,1-96-25.68h0V200a8,8,0,0,0,8,8H216a8,8,0,0,0,8-8V118.31A191.08,191.08,0,0,1,128,144Z" opacity="0.2"></path><line x1="112" y1="112" x2="144" y2="112" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line><rect x="32" y="64" width="192" height="144" rx="8" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></rect><path d="M168,64V48a16,16,0,0,0-16-16H104A16,16,0,0,0,88,48V64" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><path d="M224,118.31A191.09,191.09,0,0,1,128,144a191.14,191.14,0,0,1-96-25.68" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path></svg>
-											Budget<span class="badge bg-success-transparent ms-2">8</span>
+											Presupuesto
+											<span class="badge bg-success-transparent ms-2">8</span>
 											<i class="ri-arrow-right-s-line side-menu__angle"></i>
 										</a>
 										<ul class="slide-menu child2">
 											<li class="slide">
-												<a href="index-7.html" class="side-menu__item">Budget</a>
+												<a href="{% url 'app:budget' %}" class="side-menu__item">General</a>
 											</li>
 											<li class="slide">
-												<a href="job-details.html" class="side-menu__item">Details Budget</a>
+												<a href="{% url 'app:details_budget' %}" class="side-menu__item">Detalles del Presupuesto</a>
 											</li>
 											<li class="slide">
-												<a href="job-company-search.html" class="side-menu__item">Add Budget</a>
+												<a href="{% url 'app:add_budget' %}" class="side-menu__item">Agregar Presupuesto</a>
 											</li>
 										</ul>    
 									</li>
+
+                                    <li class="slide has-sub">
+                                        <a href="javascript:void(0);" class="side-menu__item">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="side-menu-doublemenu__icon" viewBox="0 0 256 256">
+                                                <rect width="256" height="256" fill="none"></rect>
+                                                <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Z" opacity="0.2"></path>
+                                                <circle cx="128" cy="128" r="104" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></circle>
+                                                <polyline points="128 80 128 128 176 128" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></polyline>
+                                                <line x1="96" y1="96" x2="96" y2="96" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
+                                                <line x1="160" y1="96" x2="160" y2="96" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
+                                                <line x1="128" y1="64" x2="128" y2="80" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></line>
+                                            </svg>
+                                            Gastos
+                                            <span class="badge bg-danger-transparent ms-2">12</span>
+                                            <i class="ri-arrow-right-s-line side-menu__angle"></i>
+                                        </a>
+                                        <ul class="slide-menu child2">
+                                            <li class="slide">
+                                                <a href="{% url 'app:bills' %}" class="side-menu__item">General</a>
+                                            </li>
+                                            <li class="slide">
+                                                <a href="{% url 'app:categories_bills' %}" class="side-menu__item">Categorías</a>
+                                            </li>
+                                            <li class="slide">
+                                                <a href="{% url 'app:bills_reports' %}" class="side-menu__item">Reportes</a>
+                                            </li>
+                                            <li class="slide">
+                                                <a href="{% url 'app:bills_add' %}" class="side-menu__item">Agregar Gasto</a>
+                                            </li>
+                                        </ul>    
+                                    </li>
+
+
 									<li class="slide has-sub">
 										<a href="javascript:void(0);" class="side-menu__item">
 											<svg xmlns="http://www.w3.org/2000/svg" class="side-menu-doublemenu__icon" viewBox="0 0 256 256">
@@ -70,45 +105,37 @@
 												<polyline points="120 200 120 168 192 168 192 200" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></polyline>
 												<polyline points="64 200 64 80 192 80 192 136" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></polyline>
 											</svg>
-											Departments<span class="badge bg-success-transparent ms-2">6</span>
+											Departmentos
+											<span class="badge bg-success-transparent ms-2">6</span>
 											<i class="ri-arrow-right-s-line side-menu__angle"></i>
 										</a>
 										<ul class="slide-menu child2">
 											<li class="slide">
-												<a href="crypto-transactions.html" class="side-menu__item">Resume</a>
+												<a href="{% url 'app:departments' %}" class="side-menu__item">General</a>
 											</li>
 											<li class="slide">
-												<a href="index-4.html" class="side-menu__item">Show Departments</a>
-											</li>
-											<li class="slide">
-												<a href="crypto-currency-exchange.html" class="side-menu__item">Create/add</a>
-											</li>
-											<li class="slide">
-												<a href="crypto-buy_sell.html" class="side-menu__item">Edit Department</a>
+												<a href="{% url 'app:departments_add' %}" class="side-menu__item">Anexar</a>
 											</li>
 										</ul>    
 									</li>
 									<li class="slide has-sub">
 										<a href="javascript:void(0);" class="side-menu__item">
 											<svg xmlns="http://www.w3.org/2000/svg" class="side-menu-doublemenu__icon" viewBox="0 0 256 256"><rect width="256" height="256" fill="none"></rect><path d="M128,32A96,96,0,0,0,63.8,199.38h0A72,72,0,0,1,128,160a40,40,0,1,1,40-40,40,40,0,0,1-40,40,72,72,0,0,1,64.2,39.37A96,96,0,0,0,128,32Z" opacity="0.2"></path><path d="M63.8,199.37a72,72,0,0,1,128.4,0" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></path><circle cx="128" cy="128" r="96" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></circle><circle cx="128" cy="120" r="40" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"></circle></svg>
-											Users & Roles<span class="badge bg-warning-transparent ms-2">5</span>
+											Usuarios y Roles<span class="badge bg-warning-transparent ms-2">5</span>
 											<i class="ri-arrow-right-s-line side-menu__angle"></i>
 										</a>
 										<ul class="slide-menu child2">
 											<li class="slide">
-												<a href="crm-leads.html" class="side-menu__item">Resume</a>
+												<a href="{% url 'app:roles_users' %}" class="side-menu__item">General</a>
 											</li>
 											<li class="slide">
-												<a href="index-3.html" class="side-menu__item">Show Users</a>
+												<a href="{% url 'app:roles_users_add' %}" class="side-menu__item">Agregar/Modificar Usuarios</a>
 											</li>
 											<li class="slide">
-												<a href="crm-contacts.html" class="side-menu__item">Add/Edit Users</a>
+												<a href="{% url 'app:roles' %}" class="side-menu__item">Vista de Roles</a>
 											</li>
 											<li class="slide">
-												<a href="crm-companies.html" class="side-menu__item">Show Roles/Groups</a>
-											</li>
-											<li class="slide">
-												<a href="crm-deals.html" class="side-menu__item">Add/Edit Roles/Groups</a>
+												<a href="{% url 'app:roles_add' %}" class="side-menu__item">Agregar/Modificar Roles</a>
 											</li>
 										</ul>    
 									</li>

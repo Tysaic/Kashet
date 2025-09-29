@@ -1,0 +1,216 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <!-- Page Header -->
+  <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
+    <h1 class="page-title fw-semibold fs-18 mb-0">Agregar Presupuesto</h1>
+    <div class="ms-md-1 ms-0">
+      <nav>
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="{% url 'app:index' %}">Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'app:budget' %}">Presupuesto</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Agregar</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Formulario Principal -->
+    <div class="col-xl-8">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Información del Presupuesto</div>
+        </div>
+        <div class="card-body">
+          <form>
+            <div class="row g-3">
+              <!-- Título y Departamento -->
+              <div class="col-md-6">
+                <label class="form-label">Título del Presupuesto</label>
+                <input type="text" class="form-control" placeholder="Ej: Presupuesto Q1 2024">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Departamento</label>
+                <select class="form-select">
+                  <option selected>Seleccionar departamento</option>
+                  <option value="1">Finanzas</option>
+                  <option value="2">Recursos Humanos</option>
+                  <option value="3">Operaciones</option>
+                  <option value="4">Marketing</option>
+                </select>
+              </div>
+
+              <!-- Período -->
+              <div class="col-md-6">
+                <label class="form-label">Fecha Inicio</label>
+                <input type="date" class="form-control">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Fecha Fin</label>
+                <input type="date" class="form-control">
+              </div>
+
+              <!-- Montos -->
+              <div class="col-md-4">
+                <label class="form-label">Ingreso Estimado</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" placeholder="0.00" step="0.01">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Egreso Estimado</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" placeholder="0.00" step="0.01">
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Capital Inicial</label>
+                <div class="input-group">
+                  <span class="input-group-text">$</span>
+                  <input type="number" class="form-control" placeholder="0.00" step="0.01">
+                </div>
+              </div>
+
+              <!-- Descripción -->
+              <div class="col-12">
+                <label class="form-label">Descripción</label>
+                <textarea class="form-control" rows="3" placeholder="Descripción detallada del presupuesto..."></textarea>
+              </div>
+
+              <!-- Estado y Prioridad -->
+              <div class="col-md-6">
+                <label class="form-label">Estado</label>
+                <select class="form-select">
+                  <option value="borrador">Borrador</option>
+                  <option value="activo" selected>Activo</option>
+                  <option value="pausado">Pausado</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Prioridad</label>
+                <select class="form-select">
+                  <option value="baja">Baja</option>
+                  <option value="media" selected>Media</option>
+                  <option value="alta">Alta</option>
+                </select>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel Lateral -->
+    <div class="col-xl-4">
+      <!-- Resumen -->
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Resumen</div>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Ingreso:</span>
+            <span class="fw-semibold text-success" id="summary-income">$0.00</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Egreso:</span>
+            <span class="fw-semibold text-danger" id="summary-expense">$0.00</span>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <span class="text-muted">Capital:</span>
+            <span class="fw-semibold text-primary" id="summary-capital">$0.00</span>
+          </div>
+          <hr>
+          <div class="d-flex justify-content-between">
+            <span class="fw-semibold">Balance:</span>
+            <span class="fw-bold text-primary" id="summary-balance">$0.00</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Configuración Adicional -->
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Configuración</div>
+        </div>
+        <div class="card-body">
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="notifications" checked>
+            <label class="form-check-label" for="notifications">
+              Notificaciones automáticas
+            </label>
+          </div>
+          <div class="form-check form-switch mb-3">
+            <input class="form-check-input" type="checkbox" id="alerts">
+            <label class="form-check-label" for="alerts">
+              Alertas de límite
+            </label>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="reports" checked>
+            <label class="form-check-label" for="reports">
+              Reportes mensuales
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="card custom-card">
+        <div class="card-body">
+          <div class="d-grid gap-2">
+            <button type="button" class="btn btn-primary">
+              <i class="ri-save-line me-1"></i>Guardar Presupuesto
+            </button>
+            <button type="button" class="btn btn-light">
+              <i class="ri-draft-line me-1"></i>Guardar como Borrador
+            </button>
+            <a href="{% url 'app:budget' %}" class="btn btn-outline-secondary">
+              <i class="ri-arrow-left-line me-1"></i>Cancelar
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const incomeInput = document.querySelector('input[placeholder="0.00"]:nth-of-type(1)');
+    const expenseInput = document.querySelector('input[placeholder="0.00"]:nth-of-type(2)');
+    const capitalInput = document.querySelector('input[placeholder="0.00"]:nth-of-type(3)');
+    
+    function updateSummary() {
+        const income = parseFloat(incomeInput.value) || 0;
+        const expense = parseFloat(expenseInput.value) || 0;
+        const capital = parseFloat(capitalInput.value) || 0;
+        const balance = income - expense + capital;
+        
+        document.getElementById('summary-income').textContent = `$${income.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
+        document.getElementById('summary-expense').textContent = `$${expense.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
+        document.getElementById('summary-capital').textContent = `$${capital.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
+        document.getElementById('summary-balance').textContent = `$${balance.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
+        
+        // Cambiar color del balance según el resultado
+        const balanceElement = document.getElementById('summary-balance');
+        balanceElement.className = balance >= 0 ? 'fw-bold text-success' : 'fw-bold text-danger';
+    }
+    
+    [incomeInput, expenseInput, capitalInput].forEach(input => {
+        input.addEventListener('input', updateSummary);
+    });
+});
+</script>
+{% endblock %}

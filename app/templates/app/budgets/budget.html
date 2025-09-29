@@ -1,0 +1,169 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block styles %}
+<style>
+  .budget-summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .budget-amount {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+  }
+  
+  @media (max-width: 768px) {
+    .budget-summary-cards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <!-- Page Header -->
+  <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
+    <h1 class="page-title fw-semibold fs-18 mb-0">Presupuesto General</h1>
+    <div class="ms-md-1 ms-0">
+      <nav>
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="{% url 'app:index' %}">Dashboard</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Budget</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Budget Summary Cards -->
+  <div class="budget-summary-cards">
+    <div class="card custom-card card-bg-primary">
+      <div class="card-body text-center">
+        <div class="d-flex align-items-center justify-content-center mb-2">
+          <div class="avatar avatar-md bg-white-transparent me-2">
+            <i class="ti ti-trending-up fs-20"></i>
+          </div>
+          <h6 class="card-title text-white mb-0">Total Ingreso</h6>
+        </div>
+        <div class="budget-amount text-white">$120,000</div>
+        <small class="text-white-50">+12% vs mes anterior</small>
+      </div>
+    </div>
+
+    <div class="card custom-card card-bg-danger">
+      <div class="card-body text-center">
+        <div class="d-flex align-items-center justify-content-center mb-2">
+          <div class="avatar avatar-md bg-white-transparent me-2">
+            <i class="ti ti-trending-down fs-20"></i>
+          </div>
+          <h6 class="card-title text-white mb-0">Total Egreso</h6>
+        </div>
+        <div class="budget-amount text-white">$85,000</div>
+        <small class="text-white-50">-5% vs mes anterior</small>
+      </div>
+    </div>
+
+    <div class="card custom-card card-bg-success">
+      <div class="card-body text-center">
+        <div class="d-flex align-items-center justify-content-center mb-2">
+          <div class="avatar avatar-md bg-white-transparent me-2">
+            <i class="ti ti-wallet fs-20"></i>
+          </div>
+          <h6 class="card-title text-white mb-0">Capital</h6>
+        </div>
+        <div class="budget-amount text-white">$35,000</div>
+        <small class="text-white-50">Balance disponible</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Budget by Department -->
+  <div class="card custom-card">
+    <div class="card-header">
+      <div class="card-title">
+        Presupuesto por Departamento
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table text-nowrap">
+          <thead>
+            <tr>
+              <th scope="col">Departamento</th>
+              <th scope="col">Ingreso</th>
+              <th scope="col">Egreso</th>
+              <th scope="col">Capital</th>
+              <th scope="col">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="avatar avatar-sm bg-primary-transparent me-2">
+                    <i class="ti ti-chart-line fs-14"></i>
+                  </div>
+                  <span class="fw-semibold">Finanzas</span>
+                </div>
+              </td>
+              <td><span class="text-success fw-semibold">$50,000</span></td>
+              <td><span class="text-danger fw-semibold">$30,000</span></td>
+              <td><span class="text-primary fw-semibold">$20,000</span></td>
+              <td><span class="badge bg-success-transparent">Positivo</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="avatar avatar-sm bg-secondary-transparent me-2">
+                    <i class="ti ti-users fs-14"></i>
+                  </div>
+                  <span class="fw-semibold">Recursos Humanos</span>
+                </div>
+              </td>
+              <td><span class="text-success fw-semibold">$30,000</span></td>
+              <td><span class="text-danger fw-semibold">$25,000</span></td>
+              <td><span class="text-primary fw-semibold">$5,000</span></td>
+              <td><span class="badge bg-warning-transparent">Moderado</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="avatar avatar-sm bg-info-transparent me-2">
+                    <i class="ti ti-settings fs-14"></i>
+                  </div>
+                  <span class="fw-semibold">Operaciones</span>
+                </div>
+              </td>
+              <td><span class="text-success fw-semibold">$40,000</span></td>
+              <td><span class="text-danger fw-semibold">$30,000</span></td>
+              <td><span class="text-primary fw-semibold">$10,000</span></td>
+              <td><span class="badge bg-success-transparent">Positivo</span></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="d-flex align-items-center">
+                  <div class="avatar avatar-sm bg-warning-transparent me-2">
+                    <i class="ti ti-briefcase fs-14"></i>
+                  </div>
+                  <span class="fw-semibold">Marketing</span>
+                </div>
+              </td>
+              <td><span class="text-success fw-semibold">$15,000</span></td>
+              <td><span class="text-danger fw-semibold">$18,000</span></td>
+              <td><span class="text-danger fw-semibold">-$3,000</span></td>
+              <td><span class="badge bg-danger-transparent">Déficit</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}
