@@ -2,8 +2,8 @@
 
 ## Para código nuevo / For new code
 ```bash
-git clone https://github.com/Tysaic/SmillerB.git
-cd SmillerB
+git clone https://github.com/Tysaic/Kashet.git
+cd Kashet
 # Copia tus archivos aquí / Copy your files here
 git add .
 git commit -m "Agregar código inicial"
@@ -14,7 +14,7 @@ git push origin main
 ```bash
 cd tu-directorio-de-codigo
 git init
-git remote add origin https://github.com/Tysaic/SmillerB.git
+git remote add origin https://github.com/Tysaic/Kashet.git
 git pull origin main
 git add .
 git commit -m "Agregar mi código"
