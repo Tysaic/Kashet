@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from .models import (Budget, BudgetFile)
+from .forms import BudgetForm
+from django.views.generic import CreateView, UpdateView, DeleteView, ListView, DetailView
+from django.contrib import messages
 
 # Create your views here.
 
@@ -16,11 +19,36 @@ def budget(request):
 def details_budget(request):
     return render(request, 'app/budgets/details_budget.html')
 
-def add_budget(request):
-    if request.method == 'GET':
-        return render(request, 'app/budgets/add_budget.html')
-    elif request.method == 'POST':
-        return reverse('app:budget')
+class BudgetCreateView(CreateView):
+    model = Budget
+    form_class = BudgetForm
+    template_name = 'app/budgets/add_budget.html'
+    # Cambiar a la lista de budgets
+    success_url = reverse_lazy('app:budget')
+
+    def form_valid(self, form):
+        # Guardando el formulario del modelo Budget
+        response = super().form_valid(form)
+        
+        # Guardando los archivos asociados si es necesario
+        files = self.request.FILES.getlist('file')
+        for _file in files:
+            BudgetFile.objects.create(budget=self.object, file=_file)
+        
+        messages.success(self.request, "Presupuesto creado exitosamente")
+        return response
+
+    def form_invalid(self, form):
+        messages.error(self.request, "Error al crear el presupuesto, asegurate de que el formulario este bien.")
+        return super().form_invalid(form)
+
+
+
+# def add_budget(request):
+#     if request.method == 'GET':
+#         return render(request, 'app/budgets/add_budget.html')
+#     elif request.method == 'POST':
+#         return reverse('app:budget')
 
 def bills(request):
     return render(request, 'app/bills/bills.html')

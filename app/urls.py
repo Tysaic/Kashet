@@ -6,9 +6,11 @@ app_name = 'app'
 urlpatterns = [
     path('', views.root_redirect, name='root_redirect'),  # redirect from /
     path('index/', views.index, name='index'),
+
     path('budget/', views.budget, name='budget'),
     path('details_budget/', views.details_budget, name='details_budget'),
-    path('add_budget/', views.add_budget, name='add_budget'),
+    path('add_budget/', views.BudgetCreateView.as_view(), name='add_budget'),
+    
     path('bills/', views.bills, name="bills"),
     path('categories_bills/', views.categories_bills, name="categories_bills"),
     path('bills_reports/', views.bills_reports, name="bills_reports"),
