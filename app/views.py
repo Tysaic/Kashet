@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
+from .models import (Budget, BudgetFile)
 
 # Create your views here.
 
@@ -15,7 +17,10 @@ def details_budget(request):
     return render(request, 'app/budgets/details_budget.html')
 
 def add_budget(request):
-    return render(request, 'app/budgets/add_budget.html')
+    if request.method == 'GET':
+        return render(request, 'app/budgets/add_budget.html')
+    elif request.method == 'POST':
+        return reverse('app:budget')
 
 def bills(request):
     return render(request, 'app/bills/bills.html')
