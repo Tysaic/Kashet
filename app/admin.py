@@ -1,6 +1,11 @@
 from django.contrib import admin
 from .models import (Budget, BudgetFile)
 
+
+class BudgetFileInLine(admin.TabularInline):
+    model = BudgetFile
+    extra = 1
+
 @admin.register(Budget)
 class BudgetAdmin(admin.ModelAdmin):
     list_display = (
@@ -9,7 +14,7 @@ class BudgetAdmin(admin.ModelAdmin):
          'type', 'department'
         )
     search_fields = ('title', 'department')
-
+    inlines = [BudgetFileInLine]
 
 @admin.register(BudgetFile)
 class BudgetFileAdmin(admin.ModelAdmin):

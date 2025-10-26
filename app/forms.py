@@ -33,11 +33,14 @@ class BudgetForm(forms.ModelForm):
             'due_date': 'Fecha de tope de gasto',
         }
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
 class BudgetFileForm(forms.ModelForm):
 
     class Meta:
         model = BudgetFile
         fields = ['file']
         widgets = {
-            'file' : forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'file' : MultipleFileInput(attrs={'class': 'form-control', 'multiple': True}),
         }

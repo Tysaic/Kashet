@@ -54,13 +54,6 @@ class BudgetCreateView(CreateView):
         return super().form_invalid(form)
 
 
-
-# def add_budget(request):
-#     if request.method == 'GET':
-#         return render(request, 'app/budgets/add_budget.html')
-#     elif request.method == 'POST':
-#         return reverse('app:budget')
-
 def bills(request):
     return render(request, 'app/bills/bills.html')
 

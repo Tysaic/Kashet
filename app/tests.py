@@ -71,7 +71,7 @@ class BudgetFileModelTest(TestCase):
         self.assertEqual(str(self.budget_file), f"budgets/{self.budget.identifier}/{filename}")
 
 
-class BudgetTest(TestCase):
+class BudgetViewTest(TestCase):
 
     def setUp(self):
         self.client = Client()
@@ -82,5 +82,6 @@ class BudgetTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'app/budgets/add_budget.html')
     
-    #def test_add_budget_post(self):
-    #    pass
+
+    def test_add_budget_post(self):
+        pass
