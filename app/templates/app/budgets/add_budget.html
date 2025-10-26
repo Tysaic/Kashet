@@ -138,20 +138,37 @@
 
 {% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const capitalInput = document.querySelector('input[placeholder="0.00"]:nth-of-type(1)');
-    
-    function updateSummary() {
-        const capital = parseFloat(capitalInput.value) || 0;
-        const balance = capital;
-        document.getElementById('summary-capital').textContent = `$${capital.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
-        document.getElementById('summary-balance').textContent = `$${balance.toLocaleString('es-ES', {minimumFractionDigits: 2})}`;
-        
-        // Cambiar color del balance según el resultado
-        const balanceElement = document.getElementById('summary-balance');
-        balanceElement.className = balance >= 0 ? 'fw-bold text-success' : 'fw-bold text-danger';
+document.addEventListener('DOMContentLoaded', function(){
+    const totalMountInput = document.querySelector('input[name="total_mount"]');
+
+    if(totalMountInput){
+
+      if(totalMountInput.value){
+        totalMountInput.value = formatNumber(totalMountInput.value);
+      }
+
+      totalMountInput.addEventListener('input', (e) =>{
+        let value = e.target.value;
+
+        let unformatted = value.replace(/\D/g, '');
+
+        if(unformatted){
+          e.target.value = formatNumber(unformatted)
+        } else{
+          e.target.value = '';
+        }
+      });
+
+      totalMountInput.closest('form').addEventListener('submit', () => {
+        totalMountInput.value = totalMountInput.value.replace(/\./g, '');
+      });
     }
-    capitalInput.addEventListener('input', updateSummary);
 });
+
+function formatNumber(value){
+    value = value.replace(/\./g, '');
+
+    return value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
 </script>
-{% endblock %}
+{% endblock scripts %}

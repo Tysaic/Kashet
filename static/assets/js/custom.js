@@ -680,3 +680,7 @@ productPlusBtn.forEach((element) => {
   }
 })
 /* for cart items quantity */
+
+/*Custom My JS*/
+
+

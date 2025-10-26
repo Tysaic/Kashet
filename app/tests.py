@@ -92,7 +92,7 @@ class BudgetViewTest(TestCase):
         data = {
             'title' : 'Title Example',
             'description' : 'Description example lorem ipsum...',  
-            'total_mount': 50000.00,
+            'total_mount': 50000,
             'currency': 'CLP',
             'due_date': date(2025,12,31),
             'type': '2',
@@ -130,7 +130,7 @@ class BudgetViewTest(TestCase):
         data = {
             'title' : 'Title Example',
             'description' : 'Description example lorem ipsum...',  
-            'total_mount': 50000.00,
+            'total_mount': 50000,
             'currency': 'CLP',
             'due_date': date(2025,12,31),
             'type': '2',
@@ -160,7 +160,7 @@ class BudgetViewTest(TestCase):
         data = {
             'title' : 'Title Example',
             'description' : 'Description example lorem ipsum...',  
-            'total_mount': 50000.00,
+            'total_mount': 50000,
             'currency': 'EUR',
             'due_date': date(2025,12,31),
             'type': '1',
@@ -178,7 +178,7 @@ class BudgetViewTest(TestCase):
         data = {
             'title' : 'Title Example',
             'description' : 'Description example lorem ipsum...',  
-            'total_mount': -50000.00,
+            'total_mount': -50000,
             'currency': 'EUR',
             'due_date': date(2025,12,31),
             'type': '1',
@@ -193,7 +193,7 @@ class BudgetViewTest(TestCase):
         data = {
             'title' : 'Title Example',
             'description' : 'Description example lorem ipsum...',  
-            'total_mount': 50000.00,
+            'total_mount': 50000,
             'currency': 'EUR',
             'due_date': date(2025,12,31),
             'type': '99999',

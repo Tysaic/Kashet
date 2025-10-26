@@ -1,5 +1,6 @@
 from django import forms
 from .models import Budget, BudgetFile
+from django.utils.formats import number_format
 
 class BudgetForm(forms.ModelForm):
 
@@ -18,7 +19,7 @@ class BudgetForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ingrese aca el presupuesto'}),
             'due_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-control', 'placeholder': 'Descripcion detallada del presupuesto ...'}),
-            'total_mount': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00', 'step': '10000'}),
+            'total_mount': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_total_mount','placeholder': '0.00'}),
             'currency': forms.Select(attrs={'class': 'form-select'}),
             'type': forms.Select(attrs={'class': 'form-select'}),
             'department': forms.Select(attrs={'class': 'form-select', 'placeholder': 'Ingrese aca el departamento'}),
@@ -32,6 +33,13 @@ class BudgetForm(forms.ModelForm):
             'currency': 'Moneda',
             'due_date': 'Fecha de tope de gasto',
         }
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        total = self.initial.get('total_mount') or self.instance.total_mount
+        if total:
+            self.initial['total_mount'] = number_format(total, decimal_pos=2, use_l10n=True)
+    """
 
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True

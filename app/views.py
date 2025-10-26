@@ -13,8 +13,12 @@ def root_redirect(request):
 def index (request):
     return render(request, 'index.html')
 
-def budget(request):
-    return render(request, 'app/budgets/budget.html')
+class BudgetListView(ListView):
+    model = Budget
+    template_name = 'app/budgets/budget.html'
+
+# def budget(request):
+#     return render(request, 'app/budgets/budget.html')
 
 def details_budget(request):
     return render(request, 'app/budgets/details_budget.html')
