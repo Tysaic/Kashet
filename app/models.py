@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 import uuid
 import os
 
@@ -26,7 +27,7 @@ class Budget(models.Model):
     )
     title = models.CharField(max_length=128)
     description = models.TextField(blank=True)
-    total_mount = models.DecimalField(max_digits=24, decimal_places=2)
+    total_mount = models.DecimalField(max_digits=24, decimal_places=2, validators=[MinValueValidator(0.01, message="Monto debe ser positivo.")])
     identifier = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default=CURRENCIES[0][0])
     created_at = models.DateField(auto_now_add=True)
@@ -49,8 +50,5 @@ class BudgetFile(models.Model):
 
     def __str__(self):
         return self.file.name
-
-    def path_file(self):
-        return self.file.path
 
 

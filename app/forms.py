@@ -44,3 +44,7 @@ class BudgetFileForm(forms.ModelForm):
         widgets = {
             'file' : MultipleFileInput(attrs={'class': 'form-control', 'multiple': True}),
         }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['file'].required = False
