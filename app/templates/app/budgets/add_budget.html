@@ -29,100 +29,109 @@
           <div class="card-title">Información del Presupuesto</div>
         </div>
         <div class="card-body">
-          <form method="POST" action="" enctype="multipart/form-data">
+          <form method="POST" action="{% url 'app:add_budget' %}" enctype="multipart/form-data">
             {% csrf_token %}
+
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+              </div>
+            {% endif %}
             <div class="row g-3">
               <!-- Título y Departamento -->
               <div class="col-md-6">
-                <label class="form-label">Título del Presupuesto</label>
-                <input type="text" class="form-control" placeholder="Ej: Presupuesto Q1 2024">
+                <label class="form-label">{{ form.title.label }}</label>
+                {{ form.title }}
+                {% if form.title.errors %}
+                  <div class="text-danger small">{{ form.title.errors }}</div>
+                {% endif %}
               </div>
               <div class="col-md-6">
-                <label class="form-label">Departamento</label>
-                <select class="form-select">
-                  <option selected>Seleccionar departamento</option>
-                  <option value="1">Wom</option>
-                  <option value="2">Movistar</option>
-                  <option value="3">Entel</option>
-                  <option value="4">Obras-Construcción-Emmin</option>
-                </select>
+                <label class="form-label">{{ form.department.label }}</label>
+                {{form.department}}
+                {% if form.department.errors %}
+                  <div class="text-danger small">{{ form.department.errors }}</div>
+                {% endif %}
               </div>
 
               <!-- Período -->
-              <div class="col-md-6">
-                <label class="form-label">Fecha de Pago</label>
-                <input type="date" class="form-control">
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Fecha tope del Gasto</label>
-                <input type="date" class="form-control">
+              <div class="col-5">
+                <label class="form-label">{{ form.due_date.label }}</label>
+                {{ form.due_date }}
+                {% if form.due_date.errors %}
+                  <div class="text-danger small">{{ form.due_date.errors}}</div>
+                {% endif %}
               </div>
 
               <!-- Montos -->
-              <div class="col-10">
-                <label class="form-label">Ingreso Estimado</label>
+              <div class="col-5">
+                <label class="form-label">{{ form.total_mount.label }}</label>
                 <div class="input-group">
                   <span class="input-group-text">$</span>
-                  <input type="number" class="form-control" placeholder="0.00" step="0.01">
+                  {{ form.total_mount }}
+                  {% if form.total_mount.errors %}
+                    <div class="text-danger small">{{ form.total_mount.errors}}</div>
+                  {% endif %}
                 </div>
               </div>
               <div class="col-2">
-                <label class="form-label">Moneda</label>
-                <select class="form-select">
-                  <option value="CLP" selected>CLP</option>
-                  <option value="USD">USD</option>
-                  <option value="EUR">EUR</option>
-                </select>
+                <label class="form-label">{{ form.currency.label }}</label>
+                {{form.currency}}
+                {% if form.currency.errors %}
+                    <div class="text-danger small">{{ form.currency.errors}}</div>
+                {% endif %}
               </div>
 
               <!-- Descripción -->
               <div class="col-12">
-                <label class="form-label">Descripción</label>
-                <textarea class="form-control" rows="3" placeholder="Descripción detallada del presupuesto..."></textarea>
+                <label class="form-label">{{ form.description.label }}</label>
+                {{ form.description }}
+                {% if form.description.errors%}
+                  <div class="text-danger small">{{ form.description.errors}}</div>
+                {% endif %}
               </div>
 
               <!-- Estado y Prioridad -->
               <div class="col-6">
-                <label class="form-label">Tipo de Entrega</label>
-                <select class="form-select">
-                  <option value="1">Efectivo</option>
-                  <option value="2" selected>Transferencia</option>
-                  <option value="3">Orden de Pago</option>
-                  <option value="4">Debito/Credito</option>
-                </select>
+                <label class="form-label">{{ form.type.label }}</label>
+                {{form.type}}
+                {% if form.type.errors %}
+                  <div class="text-danger small">{{ form.type.errors}}</div>
+                {% endif %}
               </div>
               <div class="col-6">
                 <label class="form-label">Subir Antecedentes o Comprobantes</label>
                 <div class="input-group">
-                    <input type="file" class="form-control" id="comprobante" multiple>
+                    {{ file_form.file }}
                     <label class="input-group-text" for="comprobante">
-                        <i class="ri-upload-2-line"></i> Subir
+                        <i class="ri-upload-2-line"></i>
                     </label>
                 </div>
-                <small class="text-muted">Formatos permitidos: PDF, JPG, PNG. Máx 5MB por archivo.</small>
+                <!-- <small class="text-muted">Formatos permitidos: PDF, JPG, PNG. Máx 5MB por archivo.</small> -->
               </div>
             </div>
+            <div class="col-12">
+              <!-- Acciones -->
+              <div class="card custom-card">
+                <div class="card-body">
+                  <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">
+                      <i class="ri-save-line me-1"></i>Guardar Presupuesto
+                    </button>
+                    <a href="{% url 'app:budget' %}" class="btn btn-outline-secondary">
+                      <i class="ri-arrow-left-line me-1"></i>Cancelar
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
           </form>
         </div>
       </div>
     </div>
 
     <!-- Panel Lateral -->
-    <div class="col-12">
-      <!-- Acciones -->
-      <div class="card custom-card">
-        <div class="card-body">
-          <div class="d-grid gap-2">
-            <button type="button" class="btn btn-primary">
-              <i class="ri-save-line me-1"></i>Guardar Presupuesto
-            </button>
-            <a href="{% url 'app:budget' %}" class="btn btn-outline-secondary">
-              <i class="ri-arrow-left-line me-1"></i>Cancelar
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
 {% endblock %}

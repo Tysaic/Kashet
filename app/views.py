@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from .models import (Budget, BudgetFile)
-from .forms import BudgetForm
+from .forms import (BudgetForm, BudgetFileForm)
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView, DetailView
 from django.contrib import messages
 
@@ -26,7 +26,16 @@ class BudgetCreateView(CreateView):
     # Cambiar a la lista de budgets
     success_url = reverse_lazy('app:budget')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['file_form'] = BudgetFileForm(self.request.POST, self.request.FILES)
+        else:
+            context['file_form'] = BudgetFileForm()
+        return context
+
     def form_valid(self, form):
+        context = self.get_context_data()
         # Guardando el formulario del modelo Budget
         response = super().form_valid(form)
         
@@ -36,6 +45,8 @@ class BudgetCreateView(CreateView):
             BudgetFile.objects.create(budget=self.object, file=_file)
         
         messages.success(self.request, "Presupuesto creado exitosamente")
+
+        # agregar logs aca
         return response
 
     def form_invalid(self, form):

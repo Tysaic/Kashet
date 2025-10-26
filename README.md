@@ -1,4 +1,4 @@
-# SmillerB
+# Kashet
 Sistema de caja chica.
 
 ## Cómo subir tu código a este repositorio / How to upload your code to this repository
@@ -10,10 +10,10 @@ Si es la primera vez que trabajas con este repositorio:
 
 ```bash
 # 1. Clona el repositorio
-git clone https://github.com/Tysaic/SmillerB.git
+git clone https://github.com/Tysaic/Kashet.git
 
 # 2. Navega al directorio
-cd SmillerB
+cd Kashet
 
 # 3. Copia tus archivos de código al directorio del repositorio
 
@@ -37,7 +37,7 @@ cd /ruta/a/tu/codigo
 git init
 
 # 3. Agrega el repositorio remoto
-git remote add origin https://github.com/Tysaic/SmillerB.git
+git remote add origin https://github.com/Tysaic/Kashet.git
 
 # 4. Descarga los archivos existentes del repositorio
 git pull origin main
@@ -56,7 +56,7 @@ git push origin main
 
 ```bash
 # 1. Asegúrate de estar en el directorio del repositorio
-cd SmillerB
+cd Kashet
 
 # 2. Descarga los últimos cambios (opcional pero recomendado)
 git pull origin main
@@ -78,10 +78,10 @@ If this is your first time working with this repository:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/Tysaic/SmillerB.git
+git clone https://github.com/Tysaic/Kashet.git
 
 # 2. Navigate to the directory
-cd SmillerB
+cd Kashet
 
 # 3. Copy your code files to the repository directory
 
@@ -105,7 +105,7 @@ cd /path/to/your/code
 git init
 
 # 3. Add the remote repository
-git remote add origin https://github.com/Tysaic/SmillerB.git
+git remote add origin https://github.com/Tysaic/Kashet.git
 
 # 4. Pull existing files from the repository
 git pull origin main
@@ -124,7 +124,7 @@ git push origin main
 
 ```bash
 # 1. Make sure you're in the repository directory
-cd SmillerB
+cd Kashet
 
 # 2. Pull latest changes (optional but recommended)
 git pull origin main
@@ -162,7 +162,7 @@ git ls-files --others --ignored --exclude-standard
 
 ### Error: "Permission denied (publickey)"
 - Asegúrate de tener configurada tu clave SSH o usa HTTPS
-- Para HTTPS: `git remote set-url origin https://github.com/Tysaic/SmillerB.git`
+- Para HTTPS: `git remote set-url origin https://github.com/Tysaic/Kashet.git`
 
 ### Error: "Updates were rejected because the remote contains work"
 - Primero haz pull: `git pull origin main`

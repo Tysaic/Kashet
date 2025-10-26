@@ -50,4 +50,7 @@ class BudgetFile(models.Model):
     def __str__(self):
         return self.file.name
 
+    def path_file(self):
+        return self.file.path
+
 
