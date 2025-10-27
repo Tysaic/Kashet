@@ -7,13 +7,6 @@ def budget_upload_path(instance, filename):
     return os.path.join('budgets', str(instance.budget.identifier), filename)
 
 class Budget(models.Model):
-    #DEPARTAMENTOS PREVISIONALES
-    DEPARTMENTS = (
-        ('1','WOM'),
-        ('2','ENTEL'),
-        ('3','MOVISTAR'),
-        ('4','GALPON'),
-    )
     CURRENCIES = (
         ('CLP', 'Chilean Peso ($)'),
         ('USD', 'US Dollar ($)'),
@@ -30,12 +23,17 @@ class Budget(models.Model):
     total_mount = models.DecimalField(max_digits=24, decimal_places=0, validators=[MinValueValidator(0.01, message="Monto debe ser positivo.")])
     identifier = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     currency = models.CharField(max_length=3, choices=CURRENCIES, default=CURRENCIES[0][0])
-    created_at = models.DateField(auto_now_add=True)
-    due_date = models.DateField(null=True, blank=True)
-    updated = models.DateField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    due_date = models.DateTimeField(null=True, blank=True)
+    updated = models.DateTimeField(auto_now=True)
     type = models.CharField(max_length=1, choices=TYPE_OF_BUDGET, default=TYPE_OF_BUDGET[0][0])
-    department = models.CharField(max_length=32, choices=DEPARTMENTS, default=DEPARTMENTS[0][0])
-
+    department = models.ForeignKey(
+        'Department', 
+        null=True, 
+        blank=True, 
+        on_delete=models.SET_NULL, 
+        related_name='budgets'
+    )
     class Meta:
         ordering = ['-created_at']
     
@@ -51,4 +49,15 @@ class BudgetFile(models.Model):
     def __str__(self):
         return self.file.name
 
+# class TypeTransaction
+# class Departments
+
+class Department(models.Model):
+
+    name = models.CharField(max_length=128)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.name
 

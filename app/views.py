@@ -15,20 +15,23 @@ def index (request):
 
 class BudgetListView(ListView):
     model = Budget
-    template_name = 'app/budgets/budget.html'
+    template_name = 'app/budgets/budget_list.html'
+    context_object_name = 'budgets'
 
+    def get_queryset(self):
+        return Budget.objects.all().order_by('-created_at')
 # def budget(request):
 #     return render(request, 'app/budgets/budget.html')
 
-def details_budget(request):
-    return render(request, 'app/budgets/details_budget.html')
+def budget(request):
+    return render(request, 'app/budgets/budget.html')
 
 class BudgetCreateView(CreateView):
     model = Budget
     form_class = BudgetForm
     template_name = 'app/budgets/add_budget.html'
     # Cambiar a la lista de budgets
-    success_url = reverse_lazy('app:budget')
+    success_url = reverse_lazy('app:list_budget')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

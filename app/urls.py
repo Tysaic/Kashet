@@ -7,8 +7,8 @@ urlpatterns = [
     path('', views.root_redirect, name='root_redirect'),  # redirect from /
     path('index/', views.index, name='index'),
 
-    path('budget/', views.BudgetListView.as_view(), name='budget'),
-    path('details_budget/', views.details_budget, name='details_budget'),
+    path('resume_budgets/', views.budget, name='resume_budgets'),
+    path('list_budget/', views.BudgetListView.as_view(), name='list_budget'),
     path('add_budget/', views.BudgetCreateView.as_view(), name='add_budget'),
     
     path('bills/', views.bills, name="bills"),
