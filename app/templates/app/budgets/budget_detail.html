@@ -1,0 +1,218 @@
+{% extends 'components/base.html' %}
+{% load static %}
+
+{% block styles %}
+<style>
+  .detail-card {
+    transition: all 0.3s ease;
+  }
+  
+  .budget-image {
+    max-width: 100%;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+  
+  .file-item {
+    transition: all 0.2s ease;
+  }
+  
+  .file-item:hover {
+    background-color: var(--light);
+    transform: translateX(5px);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 576px) {
+    .card-title {
+      font-size: 0.95rem;
+    }
+    
+    h4.text-success {
+      font-size: 1.5rem;
+    }
+    
+    .btn-sm {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+    }
+  }
+  
+  /* Text overflow handling */
+  .text-break {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  
+  .overflow-hidden {
+    overflow: hidden;
+  }
+  
+  /* Gap utility fallback for older browsers */
+  .gap-2 {
+    gap: 0.5rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <!-- Page Header -->
+  <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
+    <h1 class="page-title fw-semibold fs-18 mb-2 mb-md-0">Detalle del Presupuesto</h1>
+    <div class="ms-md-1 ms-0">
+      <nav>
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="{% url 'app:index' %}">Dashboard</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'app:list_budget' %}">Presupuestos</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Detalle</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Main Information -->
+    <div class="col-xl-8 col-lg-7 col-md-12 mb-3 mb-xl-0">
+      <div class="card custom-card detail-card">
+        <div class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center">
+          <div class="card-title mb-2 mb-sm-0">{{ budget.title }}</div>
+          <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'app:list_budget' %}" class="btn btn-sm btn-secondary">
+              <i class="ri-arrow-left-line me-1"></i><span class="d-none d-sm-inline">Volver</span>
+            </a>
+            <button class="btn btn-sm btn-primary">
+              <i class="ri-edit-line me-1"></i><span class="d-none d-sm-inline">Editar</span>
+            </button>
+            <button class="btn btn-sm btn-danger">
+              <i class="ri-delete-bin-line me-1"></i><span class="d-none d-sm-inline">Eliminar</span>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Budget Details -->
+          <div class="row mb-4">
+            <div class="col-lg-6 col-12 mb-4 mb-lg-0">
+              <h6 class="fw-semibold text-muted mb-3">Información General</h6>
+              <div class="mb-3">
+                <small class="text-muted d-block">Título</small>
+                <strong class="d-block text-break">{{ budget.title }}</strong>
+              </div>
+              <div class="mb-3">
+                <small class="text-muted d-block">Descripción</small>
+                <p class="mb-0 text-break">{{ budget.description|default:"Sin descripción" }}</p>
+              </div>
+              <div class="mb-3">
+                <small class="text-muted d-block">Identificador</small>
+                <code class="d-block text-break" style="word-break: break-all;">{{ budget.identifier }}</code>
+              </div>
+            </div>
+            
+            <div class="col-lg-6 col-12">
+              <h6 class="fw-semibold text-muted mb-3">Detalles Financieros</h6>
+              <div class="mb-3">
+                <small class="text-muted d-block">Monto Total</small>
+                <h4 class="text-success mb-0">
+                  {{ budget.total_mount|floatformat:0 }} {{ budget.currency }}
+                </h4>
+              </div>
+              <div class="mb-3">
+                <small class="text-muted d-block">Tipo de Transacción</small>
+                <span class="badge bg-primary-transparent">{{ budget.get_type_display }}</span>
+              </div>
+              <div class="mb-3">
+                <small class="text-muted d-block">Departamento</small>
+                <strong>{{ budget.department.name|default:"Sin departamento" }}</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dates -->
+          <div class="row mb-4">
+            <div class="col-lg-4 col-sm-6 col-12 mb-3 mb-lg-0">
+              <small class="text-muted d-block">Fecha de Creación</small>
+              <strong class="d-block">{{ budget.created_at|date:"d/m/Y H:i" }}</strong>
+            </div>
+            <div class="col-lg-4 col-sm-6 col-12 mb-3 mb-lg-0">
+              <small class="text-muted d-block">Fecha de Vencimiento</small>
+              <strong class="d-block">{{ budget.due_date|date:"d/m/Y H:i"|default:"Sin fecha" }}</strong>
+            </div>
+            <div class="col-lg-4 col-sm-12 col-12">
+              <small class="text-muted d-block">Última Actualización</small>
+              <strong class="d-block">{{ budget.updated|date:"d/m/Y H:i" }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Files -->
+    <div class="col-xl-4 col-lg-5 col-md-12">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Archivos Adjuntos ({{ files.count }})</div>
+        </div>
+        <div class="card-body">
+          {% if files %}
+            <div class="list-group">
+              {% for file in files %}
+                <a href="{{ file.file.url }}" target="_blank" class="list-group-item list-group-item-action file-item">
+                  <div class="d-flex align-items-center">
+                    <i class="ri-file-line fs-4 me-2 me-sm-3 text-primary flex-shrink-0"></i>
+                    <div class="flex-grow-1 overflow-hidden">
+                      <h6 class="mb-1 text-truncate">{{ file.file.name|slice:"8:" }}</h6>
+                      <small class="text-muted d-block">{{ file.uploaded_at|date:"d/m/Y H:i" }}</small>
+                    </div>
+                    <i class="ri-download-line text-muted ms-2 flex-shrink-0"></i>
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-center py-4">
+              <i class="ri-file-unknow-line fs-1 text-muted"></i>
+              <p class="text-muted mt-2 mb-0">No hay archivos adjuntos</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Additional Info Card -->
+      <div class="card custom-card mt-3">
+        <div class="card-header">
+          <div class="card-title">Resumen</div>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted">Estado:</span>
+            <span class="badge bg-success">Activo</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted">Archivos:</span>
+            <strong>{{ files.count }}</strong>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted">Moneda:</span>
+            <strong>{{ budget.get_currency_display }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Formatear el monto con separadores de miles
+  document.addEventListener('DOMContentLoaded', function() {
+    const amountElement = document.querySelector('.text-success');
+    if (amountElement) {
+      let amount = amountElement.textContent.trim().split(' ')[0];
+      let currency = amountElement.textContent.trim().split(' ')[1];
+      let formatted = parseFloat(amount.replace(/,/g, '')).toLocaleString('es-CL');
+      amountElement.textContent = formatted + ' ' + currency;
+    }
+  });
+</script>
+{% endblock %}

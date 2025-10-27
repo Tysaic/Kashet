@@ -80,7 +80,75 @@ class BudgetFileModelTest(TestCase):
     def test_budgetfile_str(self):
         filename = self.budget_file.file.name.split('/')[-1]
         self.assertEqual(str(self.budget_file), f"budgets/{self.budget.identifier}/{filename}")
+
+
+class DepartmentModelTest(TestCase):
+    def setUp(self):
+        self.department = Department.objects.create(
+            name='WOM'
+        )
     
+    def test_department_creation(self):
+
+        self.assertEqual(Department.objects.all().first().name, 'WOM')
+        self.assertIsNotNone(self.department.id)
+        self.assertIsInstance(self.department.name, str)
+        max_length = self.department._meta.get_field('name').max_length
+        self.assertEqual(max_length, 32)
+    
+    def test_department_str(self):
+        expected = "WOM"
+        self.assertEqual(str(self.department), expected)
+    
+    def test_department_unique_creation(self):
+        dept_entel = Department.objects.create(name="ENTEL")
+        dept_movistar = Department.objects.create(name="MOVISTAR")
+
+        self.assertEqual(Department.objects.count(), 3)
+        self.assertNotEqual(dept_entel.id, dept_movistar.id)
+    
+    def test_department_budgets_relation(self):
+        firt_budget = Budget.objects.create(
+            title="Budget 1",
+            description = "Description 1",
+            total_mount = 10000,
+            currency="CLP",
+            department=self.department,
+            due_date = datetime(2025,12,31,0,0,tzinfo=timezone.utc)
+        )
+        
+        second_budget = Budget.objects.create(
+            title="Budget 2",
+            description = "Description 2",
+            total_mount = 20000,
+            currency="CLP",
+            department=self.department,
+            due_date = datetime(2025,12,31,0,0,tzinfo=timezone.utc)
+        )
+
+        self.assertEqual(self.department.budgets.count(), 2)
+        self.assertIn(firt_budget, self.department.budgets.all())
+        self.assertIn(second_budget, self.department.budgets.all())
+    
+    def test_department_deletion_with_budgets(self):
+        budget = Budget.objects.create(
+            title="Budget Test",
+            description = "Description",
+            total_mount = 10000,
+            currency="CLP",
+            department=self.department,
+            due_date = datetime(2025,12,31,0,0,tzinfo=timezone.utc)
+        )
+
+        department_id = self.department.id
+        self.department.delete()
+
+        budget.refresh_from_db()
+        self.assertIsNone(budget.department)
+        self.assertEqual(Budget.objects.count(), 1)
+
+
+
 
 @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
 class BudgetViewTest(TestCase):
@@ -97,7 +165,7 @@ class BudgetViewTest(TestCase):
     def test_add_budget_get(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'app/budgets/add_budget.html')
+        self.assertTemplateUsed(response, 'app/budgets/budget_add.html')
     
 
     def test_add_budget_post(self):
@@ -217,7 +285,78 @@ class BudgetViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(Budget.objects.count(), 0)
 
-    # Invalid Form Continue
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class BudgetListView(TestCase):
 
+    def setUp(self):
 
-    # BudgetListView
+        for dept in ('WOM', 'ENTEL', 'MOVISTAR'):
+            Department.objects.create(name=dept)
+
+        self.firt_budget = Budget.objects.create(
+            title="Budget 1",
+            description = "Description 1",
+            total_mount = 10000,
+            currency="CLP",
+            department=Department.objects.get(id=1),
+            due_date = datetime(2025,12,31,0,0,tzinfo=timezone.utc)
+        )
+        
+        self.second_budget = Budget.objects.create(
+            title="Budget 2",
+            description = "Description 2",
+            total_mount = 20000,
+            currency="CLP",
+            department=Department.objects.get(id=2),
+            due_date = datetime(2025,12,31,0,0,tzinfo=timezone.utc)
+        )
+
+        self.third_budget = Budget.objects.create(
+            title="Budget 3",
+            description = "Description 3",
+            total_mount = 300000,
+            currency="CLP",
+            department=Department.objects.get(id=3),
+            due_date = datetime(2025,12,31,0,0,tzinfo=timezone.utc)
+        )
+
+        self.client = Client()
+        self.url = reverse('app:list_budget')
+
+    def test_list_budget_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'app/budgets/budget_list.html')
+    
+    def test_list_budget_display_all(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+        self.assertIn('budgets', response.context)
+        budgets = response.context['budgets']
+
+        self.assertEqual(budgets.count(), 3)
+
+        self.assertIn(self.firt_budget, budgets)
+        self.assertIn(self.second_budget, budgets)
+        self.assertIn(self.third_budget, budgets)
+
+    def test_list_budget_displays_correct_data(self):
+
+        response = self.client.get(self.url)
+
+        self.assertContains(response, "Budget 1")
+        self.assertContains(response, "Budget 2")
+        self.assertContains(response, "Budget 3")
+        self.assertContains(response, "Description 1")
+        self.assertContains(response, "Description 2")
+        self.assertContains(response, "Description 3")
+    
+    def test_list_budget_empty(self):
+        Budget.objects.all().delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+        budgets = response.context['budgets']
+        self.assertEqual(budgets.count(), 0)
+        

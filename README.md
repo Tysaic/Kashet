@@ -1,6 +1,24 @@
 # Kashet
 Sistema de caja chica.
 
+# Iniciar server
+```
+python manage.py runserver
+```
+
+# hacer migracion
+```
+python manage.py makemigrations
+python manage.py migrate
+```
+
+# Iniciar departamentos por defecto
+```
+python manage.py init_departments
+```
+
+
+---
 ## Cómo subir tu código a este repositorio / How to upload your code to this repository
 
 ### Español

@@ -54,7 +54,7 @@ class BudgetFile(models.Model):
 
 class Department(models.Model):
 
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=32)
     created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 

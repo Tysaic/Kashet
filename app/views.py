@@ -29,7 +29,7 @@ def budget(request):
 class BudgetCreateView(CreateView):
     model = Budget
     form_class = BudgetForm
-    template_name = 'app/budgets/add_budget.html'
+    template_name = 'app/budgets/budget_add.html'
     # Cambiar a la lista de budgets
     success_url = reverse_lazy('app:list_budget')
 
@@ -60,6 +60,17 @@ class BudgetCreateView(CreateView):
         messages.error(self.request, "Error al crear el presupuesto, asegurate de que el formulario este bien.")
         return super().form_invalid(form)
 
+class BudgetDetailView(DetailView):
+    model = Budget
+    template_name = "app/budgets/budget_detail.html"
+    context_object_name = "budget"
+    slug_field = "identifier"
+    slug_url_kwarg = "identifier"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['files'] = self.object.upload_folders.all()
+        return context
 
 def bills(request):
     return render(request, 'app/bills/bills.html')
