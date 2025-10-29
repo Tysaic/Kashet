@@ -359,4 +359,10 @@ class BudgetListView(TestCase):
 
         budgets = response.context['budgets']
         self.assertEqual(budgets.count(), 0)
-        
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class BudgetDetailView(TestCase):
+
+    def setUp(self):
+        pass
