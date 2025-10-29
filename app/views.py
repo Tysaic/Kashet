@@ -23,7 +23,7 @@ class BudgetListView(ListView):
 # def budget(request):
 #     return render(request, 'app/budgets/budget.html')
 
-def budget(request):
+def resume_budget(request):
     return render(request, 'app/budgets/budget.html')
 
 class BudgetCreateView(CreateView):
@@ -71,6 +71,66 @@ class BudgetDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['files'] = self.object.upload_folders.all()
         return context
+
+class BudgetUpdateView(UpdateView):
+    model = Budget
+    form_class = BudgetForm
+    template_name = "app/budgets/budget_update.html"
+    slug_field = "identifier"
+    slug_url_kwarg = "identifier"
+
+    def get_success_url(self):
+        return reverse_lazy("app:detail_budget", kwargs={'identifier': self.object.identifier})
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+
+        if self.request.POST:
+            context['file_form'] = BudgetFileForm(self.request.POST)
+        else:
+            context['file_form'] = BudgetFileForm()
+            context['files'] = self.object.upload_folders.all()
+        
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        files = self.request.FILES.getlist('file')
+
+        for _file in files:
+            BudgetFile.objects.create(budget=self.object, file=_file)
+        
+        messages.success(self.request, f"Presupuesto '{self.object.title}' actualizado exitosamente! ")
+        return response
+    
+    def form_invalid(self, form):
+        messages.error(self.request, "Error en los campos. Favor rellenar correctamente.")
+        return super().form_invalid(form)
+
+    def post(self, request, *args, **kwargs):
+
+        self.object = self.get_object()
+
+        delete_file_id = request.POST.get('delete_file')
+
+        if delete_file_id:
+            file_to_delete = BudgetFile.objects.get(id=delete_file_id, budget=self.object)
+            file_to_delete.delete()
+            return redirect(request.path)
+        
+        new_files = request.FILES.getlist('file')
+
+        for new_file in new_files:
+            BudgetFile.objects.create(budget=self.object, file=new_file)
+        
+        form = self.get_form()
+        if form.is_valid():
+            messages.success(request, f"Presupuesto '{self.object.title}' actualizado correctamente.")
+            return self.form_valid(form)
+        else:
+            messages.error(request, "Error en los campos. Favor validar!")
+            return self.form_invalid(form)
 
 def bills(request):
     return render(request, 'app/bills/bills.html')

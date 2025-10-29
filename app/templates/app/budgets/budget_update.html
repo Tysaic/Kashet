@@ -1,15 +1,11 @@
 {% extends 'components/base.html' %}
+{% load utils %}
 {% load static %}
-
-{% block styles %}
-<link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
-{% endblock %}
-
 {% block content %}
 <div class="container-fluid">
   <!-- Page Header -->
   <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
-    <h1 class="page-title fw-semibold fs-18 mb-0">Agregar Presupuesto</h1>
+    <h1 class="page-title fw-semibold fs-18 mb-0">Editar/Actualizar Presupuesto</h1>
     </div>
   </div>
 
@@ -21,7 +17,7 @@
           <div class="card-title">Información del Presupuesto</div>
         </div>
         <div class="card-body">
-          <form method="POST" action="{% url 'app:add_budget' %}" enctype="multipart/form-data">
+          <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
 
             {% if form.non_field_errors %}
@@ -84,22 +80,67 @@
               </div>
 
               <!-- Estado y Prioridad -->
-              <div class="col-xs-12 col-md-6 col-lg-6 col-xl-6">
-                <label class="form-label">{{ form.type.label }}</label>
-                {{form.type}}
-                {% if form.type.errors %}
-                  <div class="text-danger small">{{ form.type.errors}}</div>
-                {% endif %}
-              </div>
-              <div class="col-xs-12 col-md-6 col-lg-6 col-xl-6">
-                <label class="form-label">Subir Antecedentes o Comprobantes</label>
-                <div class="input-group">
+            <div class="col-12">
+              <label class="form-label fw-semibold mb-3 fs-5 d-block text-center">
+                Antecedentes o Comprobantes
+              </label>
+
+              <!-- Card contenedora de ancho completo -->
+              <div class="card shadow-sm border-0 rounded-4 w-100">
+                <div class="card-body p-4">
+
+                  <!-- Input de carga -->
+                  <div class="input-group mb-4">
+                    <span class="input-group-text bg-gradient text-white" style="background-color: #5b4bff;">
+                      <i class="ri-upload-2-line"></i>
+                    </span>
                     {{ file_form.file }}
-                    <label class="input-group-text" for="comprobante">
-                        <i class="ri-upload-2-line"></i>
-                    </label>
+                  </div>
+
+                  <!-- Lista de archivos -->
+                  {% if files %}
+                    <div class="table-responsive">
+                      <table class="table align-middle table-hover mb-0">
+                        <thead class="table-light">
+                          <tr>
+                            <th scope="col" class="text-start">Archivo</th>
+                            <th scope="col" class="text-end">Ver</th>
+                            <th scope="col" class="text-end">Eliminar</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for file in files %}
+                            <tr>
+                              <td class="text-start">
+                                <i class="ri-attachment-2 text-primary me-2 fs-5"></i>
+                                  {{ file.file|basename }}
+                              </td>
+                              <td class="text-end text-muted small">
+                                <a href="{{ file.file.url }}" target="_blank" class="text-decoration-none text-dark fw-medium">
+                                  <i class="ri-eye-line"></i>
+                                </a>
+                              </td>
+                              <td class="text-end">
+                                <form method="POST" style="display:inline;">
+                                  {% csrf_token %}
+                                  <input type="hidden" name="delete_file" value="{{ file.id }}">
+                                  <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Eliminar Archivo?')">
+                                    <i class="ri-delete-bin-line"></i>
+                                  </button>
+                                </form>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  {% else %}
+                    <div class="alert alert-light text-center text-muted mb-0 py-3" role="alert">
+                      <i class="ri-information-line me-2"></i>No hay archivos adjuntos.
+                    </div>
+                  {% endif %}
+
                 </div>
-                <!-- <small class="text-muted">Formatos permitidos: PDF, JPG, PNG. Máx 5MB por archivo.</small> -->
               </div>
             </div>
             <div class="col-12">
@@ -117,7 +158,7 @@
                 </div>
               </div>
             </div>
-            
+            </div>
           </form>
         </div>
       </div>

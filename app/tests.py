@@ -148,7 +148,16 @@ class DepartmentModelTest(TestCase):
         self.assertEqual(Budget.objects.count(), 1)
 
 
+class BudgetResume(TestCase):
 
+    def setUp(self):
+        self.client = Client()
+        self.url = reverse('app:resume_budgets')
+    
+    def test_budget_resume_test(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'app/budgets/budget.html')
 
 @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
 class BudgetViewTest(TestCase):
