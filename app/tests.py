@@ -430,6 +430,7 @@ class BudgetUpdateView(TestCase):
         self.url = reverse("app:update_budget", kwargs={"identifier": self.budget.identifier})
 
     def test_budget_update_view_get(self):
+
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "app/budgets/budget_update.html")
@@ -437,6 +438,8 @@ class BudgetUpdateView(TestCase):
         self.assertIn("files", response.context)
         self.assertContains(response, "First Budget March.")
         self.assertContains(response, "First Budget Description March.")
+    
+
     
     def test_budget_update_view_post_valid(self):
 
@@ -475,6 +478,29 @@ class BudgetUpdateView(TestCase):
         response = self.client.post(self.url, {"delete_file": self.file.id})
         self.assertEqual(response.status_code, 302)
         self.assertFalse(BudgetFile.objects.filter(id=self.file.id).exists())
+    
+    def test_budget_update_view_department_and_type(self):
+        new_department = Department.objects.create(name="Entel")
+        
+        data = {
+            "title": "Changed budget",
+            "description": "Budget with updated department and type",
+            "department": new_department.id,
+            "total_mount": 350000,
+            "currency": "USD",
+            "type": "2"
+        }
+
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 302)
+
+        self.budget.refresh_from_db()
+        self.assertEqual(self.budget.department, new_department)
+        self.assertEqual(self.budget.type, "2")
+        self.assertEqual(self.budget.total_mount, 350000)
+        self.assertEqual(self.budget.currency, "USD")
+        self.assertEqual(self.budget.title, "Changed budget")
+        self.assertEqual(self.budget.description, "Budget with updated department and type")
 
 
 @override_settings(MEDIA_ROOT=tempfile.mkdtemp())
