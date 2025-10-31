@@ -374,4 +374,74 @@ class BudgetListView(TestCase):
 class BudgetDetailView(TestCase):
 
     def setUp(self):
+        self.department = Department.objects.create(name="Movistar")
+
+        self.budget = Budget.objects.create(
+            identifier = uuid.uuid4(),
+            title = "First Budget.",
+            description = "Budget Description ...",
+            department = self.department,
+            total_mount = 150000,
+            currency="CLP",
+            type="Transferencia"
+        )
+
+        self.detail_url = reverse("app:detail_budget", kwargs={"identifier": self.budget.identifier})
+        self.update_url = reverse("app:update_budget", kwargs={"identifier": self.budget.identifier})
+
+        def test_budget_detail_view_status_and_template(self):
+            response = self.client.get(self.detail_url)
+            self.assertEqual(response.status_code, 200)
+            self.assertTemplateUsed(response, "app/budgets/budget_detail.html")
+
+        def test_budget_detail_view_context(self):
+            response = self.client.get(self.detail_url)
+            self.assertEqual(response.context["object"], self.budget)
+        
+        def test_budget_detail_view_content(self):
+            response = self.client.get(self.detail_url)
+            self.assertContains(response, "First Budget.")
+            self.assertContains(response, "Budget Description ...")
+            self.assertContains(response, self.department)
+            self.assertContains(response, self.total_mount)
+            self.assertContains(response, self.currency)
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class BudgetUpdateView(TestCase):
+
+    def setUp(self):
+        self.department = Department.objects.create(name="Movistar")
+
+        self.budget = Budget.objects.create(
+            identifier = uuid.uuid4(),
+            title = "First Budget March.",
+            description = "First Budget Description March.",
+            department = self.department,
+            total_mount = 150000,
+            currency="CLP",
+            type="Transferencia"
+        )
+
+        self.file = BudgetFile.objects.create(
+            budget=self.budget,
+            file=SimpleUploadedFile("budget.pdf", b"Data Dummy.", content_type="application/pdf")
+        )
+
+        self.url = reverse("app:edit_budget", kwargs={"identifier": self.budget.identifier})
+
+    def test_budget_update_view_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/budgets/budget_update.html")
+        self.assertIn("file_form", response.context)
+        self.assertIn("files", response.context)
+        self.assertContains(response, "First Budget March.")
+        self.assertContains(response, "First Budget Description March.")
+    
+    def test_budget_update_view_post_valid(self):
+
+        """
+        
+        
+        """
         pass
