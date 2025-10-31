@@ -7,9 +7,6 @@ from django.contrib import messages
 
 # Create your views here.
 
-def root_redirect(request):
-    return redirect('app:index')  # Redirect to URL named 'index' in app namespace
-
 def index (request):
     return render(request, 'index.html')
 
@@ -94,20 +91,6 @@ class BudgetUpdateView(UpdateView):
         
         return context
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        files = self.request.FILES.getlist('file')
-
-        for _file in files:
-            BudgetFile.objects.create(budget=self.object, file=_file)
-        
-        messages.success(self.request, f"Presupuesto '{self.object.title}' actualizado exitosamente! ")
-        return response
-    
-    def form_invalid(self, form):
-        messages.error(self.request, "Error en los campos. Favor rellenar correctamente.")
-        return super().form_invalid(form)
-
     def post(self, request, *args, **kwargs):
 
         self.object = self.get_object()
@@ -124,13 +107,30 @@ class BudgetUpdateView(UpdateView):
         for new_file in new_files:
             BudgetFile.objects.create(budget=self.object, file=new_file)
         
-        form = self.get_form()
+        form = self.form_class(request.POST, instance=self.object)
         if form.is_valid():
+            self.object = form.save(commit=False)
+            self.object.save()
             messages.success(request, f"Presupuesto '{self.object.title}' actualizado correctamente.")
-            return self.form_valid(form)
+            return redirect("app:list_budget")
         else:
-            messages.error(request, "Error en los campos. Favor validar!")
+            errors = []
+            for field, _list in form.errors.items():
+                label = form.fields[field].label if field in form.fields else field
+                errors.append(label)
+            messages.error(request, f"Error en los campos: {errors}")
             return self.form_invalid(form)
+
+class BudgetDeleteView(DeleteView):
+
+    model = Budget
+    template_name = "app/budgets/budget_delete.html"
+    slug_field = "identifier"
+    slug_url_kwarg = "identifier"
+
+    def get_success_url(self):
+        messages.success(self.request, f"Presupuesto {self.object.title} eliminado correctamente.")
+        return reverse_lazy("app:list_budget")
 
 def bills(request):
     return render(request, 'app/bills/bills.html')

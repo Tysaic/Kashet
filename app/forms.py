@@ -33,13 +33,6 @@ class BudgetForm(forms.ModelForm):
             'currency': 'Moneda',
             'due_date': 'Fecha de tope de gasto',
         }
-    """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        total = self.initial.get('total_mount') or self.instance.total_mount
-        if total:
-            self.initial['total_mount'] = number_format(total, decimal_pos=2, use_l10n=True)
-    """
 
 class MultipleFileInput(forms.ClearableFileInput):
     allow_multiple_selected = True

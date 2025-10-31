@@ -383,7 +383,7 @@ class BudgetDetailView(TestCase):
             department = self.department,
             total_mount = 150000,
             currency="CLP",
-            type="Transferencia"
+            type="1"
         )
 
         self.detail_url = reverse("app:detail_budget", kwargs={"identifier": self.budget.identifier})
@@ -419,7 +419,7 @@ class BudgetUpdateView(TestCase):
             department = self.department,
             total_mount = 150000,
             currency="CLP",
-            type="Transferencia"
+            type="1"
         )
 
         self.file = BudgetFile.objects.create(
@@ -427,7 +427,7 @@ class BudgetUpdateView(TestCase):
             file=SimpleUploadedFile("budget.pdf", b"Data Dummy.", content_type="application/pdf")
         )
 
-        self.url = reverse("app:edit_budget", kwargs={"identifier": self.budget.identifier})
+        self.url = reverse("app:update_budget", kwargs={"identifier": self.budget.identifier})
 
     def test_budget_update_view_get(self):
         response = self.client.get(self.url)
@@ -440,8 +440,92 @@ class BudgetUpdateView(TestCase):
     
     def test_budget_update_view_post_valid(self):
 
-        """
+        data = {
+            "title": "Updated budget.",
+            "description": "Updated budget description",
+            "department": self.department.id,
+            "total_mount": 250000,
+            "currency": "USD",
+            "type": "1"
+        }
+
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 302)
+
+        self.budget.refresh_from_db()
+        self.assertEqual(self.budget.title, "Updated budget.")
+        self.assertEqual(self.budget.description, "Updated budget description")
+        self.assertEqual(self.budget.department, self.department)
+        self.assertEqual(self.budget.total_mount, 250000)
+
+    
+    def test_budget_update_view_upload_file(self):
+
+        new_file = SimpleUploadedFile("New_tax_document.pdf", b"loremp ipsum", content_type="application/pdf")
+        response = self.client.post(self.url, {"file": new_file})
+
+        self.assertEqual(response.status_code, 200)
+
+        files = BudgetFile.objects.filter(budget=self.budget)
+        self.assertEqual(files.count(), 2)
+        self.assertTrue(any("New_tax_document.pdf" in f.file.name for f in files))
+
+    def test_budget_update_view_delete_file(self):
+
+        response = self.client.post(self.url, {"delete_file": self.file.id})
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(BudgetFile.objects.filter(id=self.file.id).exists())
+
+
+@override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+class BudgetDeleteView(TestCase):
+
+    def setUp(self):
         
-        
-        """
-        pass
+        self.department = Department.objects.create(name="WOM")
+        self.budget = Budget.objects.create(
+            identifier = uuid.uuid4(),
+            title = "Budget to delete",
+            description = "Description to delete",
+            department = self.department,
+            total_mount=10000,
+            currency="USD",
+            type=1
+        )
+
+        self.test_file = SimpleUploadedFile("testing_file.pdf", b"Content to testing", content_type="application/pdf")
+        self.budget_file = BudgetFile.objects.create(budget=self.budget, file = self.test_file)
+        self.file_path = self.budget_file.file.path
+        self.folder_path = os.path.dirname(self.file_path)
+
+        self.url = reverse("app:delete_budget", kwargs={'identifier': self.budget.identifier})
+    
+    def test_budget_delete_view_get(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "app/budgets/budget_delete.html")
+        self.assertContains(response, "Eliminar definitivamente")
+
+    
+    def test_budget_delete_post(self):
+        #existing yet the data before delete?
+        self.assertTrue(Budget.objects.filter(id=self.budget.id).exists())
+        self.assertTrue(BudgetFile.objects.filter(budget=self.budget).exists())
+        self.assertTrue(os.path.isfile(self.file_path))
+
+        response = self.client.post(self.url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Budget.objects.filter(id=self.budget.id).exists())
+        self.assertFalse(BudgetFile.objects.filter(budget=self.budget).exists())
+        self.assertFalse(os.path.exists(self.file_path))
+        self.assertFalse(os.path.exists(self.folder_path))
+    
+    def test_budget_delete_invalid_identifier(self):
+        fake_url = reverse("app:delete_budget", kwargs={'identifier': uuid.uuid4()})
+        response = self.client.get(fake_url)
+        self.assertEqual(response.status_code, 404)
+
+
+
+

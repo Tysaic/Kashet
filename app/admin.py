@@ -9,9 +9,9 @@ class BudgetFileInLine(admin.TabularInline):
 @admin.register(Budget)
 class BudgetAdmin(admin.ModelAdmin):
     list_display = (
-        'title', 'description', 'total_mount', 
-        'identifier', 'currency', 'created_at', 
-         'type', 'department'
+        'title', 'total_mount', 
+        'currency', 'created_at', 
+         'due_date','type', 'department'
         )
     search_fields = ('title', 'department')
     inlines = [BudgetFileInLine]
