@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.contrib.auth.models import User
 import uuid
 import os
 
@@ -60,4 +61,29 @@ class Department(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
+class ActivityLog(models.Model):
+    LEVELS = [
+        ('INFO', 'Info'),
+        ('WARNING', 'Warning'),
+        ('ERROR', 'Error'),
+    ]
+
+    #user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
+    level = models.CharField(max_length=10, choices=LEVELS, default='INFO')
+    action = models.CharField(max_length=255)
+    method = models.CharField(max_length=10, null=True, blank=True)
+    path = models.CharField(max_length=255, null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    extra_data = models.JSONField(null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        #return f'[{self.timestamp: %Y-%m-%d %H:%M}] {self.user or "System"} - self.action'
+        return f'[{self.timestamp: %Y-%m-%d %H:%M}] {"System"} - self.action'
 

@@ -62,6 +62,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'app.middleware.activity_log.ActivityLogMiddleware',
 ]
 
 ROOT_URLCONF = 'kashet.urls'
@@ -141,3 +142,47 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# LOGS
+
+LOG_DIRS = os.path.join(BASE_DIR, "logs")
+os.makedirs(LOG_DIRS, exist_ok=True)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose":{
+            "format": "[{asctime}] {levelname} {name} ({lineno}): {message}",
+            "style": "{",
+        },
+        "simple": {"format": "{levelname}: {message}", "style": "{"},
+    },
+    "handlers":{
+        "file": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(LOG_DIRS, "system.log"),
+            "formatter": "verbose",
+        },
+        "db": {
+            "level": "WARNING", # Just warning or errors save into the database
+            "class": "app.utils.log_handlers.DatabaseLogHandler",
+        },
+        "console":{
+            "class": "logging.StreamHandler",
+            "formatter": "simple",
+        },
+    },
+    "loggers":{
+        "django": {
+            "handlers": ["file", "console"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "app": {
+            "handlers": ["file", "db", "console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}

@@ -4,10 +4,18 @@ from .models import (Budget, BudgetFile)
 from .forms import (BudgetForm, BudgetFileForm)
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView, DetailView
 from django.contrib import messages
+import logging
+
+logger = logging.getLogger("app")
 
 # Create your views here.
 
 def index (request):
+    logger.info(f"User {request.user} init in index", extra={
+        "user": request.user,
+        "path": request.path,
+        "method": request.method,
+    })
     return render(request, 'index.html')
 
 class BudgetListView(ListView):
@@ -48,13 +56,28 @@ class BudgetCreateView(CreateView):
         for _file in files:
             BudgetFile.objects.create(budget=self.object, file=_file)
         
-        messages.success(self.request, "Presupuesto creado exitosamente")
+        logger.info(
+            f'Budget "{self.object.title}" created by {self.request.user if self.request.user else "Anom"}',
+            extra={
+                "user": self.request.user if self.request.user.is_authenticated else None,
+                "path": self.request.path,
+                "method": self.request.method,
+                "extra_data": {"identifier": str(self.object.identifier)},
+            }
+        )
 
         # agregar logs aca
         return response
 
     def form_invalid(self, form):
-        messages.error(self.request, "Error al crear el presupuesto, asegurate de que el formulario este bien.")
+        logger.exception(
+            f'Error validing Budget {self.object.title} created by {self.request.user if self.request.user else "Anom"}',
+            extra={
+                "user": self.request.user if self.request.user.is_authenticated else None,
+                "path": self.request.path,
+                "method": self.request.method,
+            }
+        )
         return super().form_invalid(form)
 
 class BudgetDetailView(DetailView):
@@ -100,25 +123,59 @@ class BudgetUpdateView(UpdateView):
         if delete_file_id:
             file_to_delete = BudgetFile.objects.get(id=delete_file_id, budget=self.object)
             file_to_delete.delete()
+            logger.info(
+                f'Budget "{file_to_delete.file.name}" files deleted from "{self.object.title}" by {self.request.user if self.request.user else "Anom"}',
+                extra={
+                    "user": self.request.user if self.request.user.is_authenticated else None,
+                    "path": self.request.path,
+                    "method": self.request.method,
+                    "extra_data": {"identifier": str(self.object.identifier)},
+                }
+            )
             return redirect(request.path)
         
         new_files = request.FILES.getlist('file')
 
         for new_file in new_files:
+            logger.info(
+                f'{new_file} files add to Budget: "{self.object.title}" by {self.request.user if self.request.user else "Anom"}',
+                extra={
+                    "user": self.request.user if self.request.user.is_authenticated else None,
+                    "path": self.request.path,
+                    "method": self.request.method,
+                    "extra_data": {"identifier": str(self.object.identifier)},
+                }
+            )
             BudgetFile.objects.create(budget=self.object, file=new_file)
         
         form = self.form_class(request.POST, instance=self.object)
         if form.is_valid():
             self.object = form.save(commit=False)
             self.object.save()
-            messages.success(request, f"Presupuesto '{self.object.title}' actualizado correctamente.")
+            logger.info(
+            f'Budget "{self.object.title}" updated by {self.request.user if self.request.user else "Anom"}',
+                extra={
+                    "user": self.request.user if self.request.user.is_authenticated else None,
+                    "path": self.request.path,
+                    "method": self.request.method,
+                    "extra_data": {"identifier": str(self.object.identifier)},
+                }
+            )
             return redirect("app:list_budget")
         else:
             errors = []
             for field, _list in form.errors.items():
                 label = form.fields[field].label if field in form.fields else field
                 errors.append(label)
-            messages.error(request, f"Error en los campos: {errors}")
+            logger.warning(
+                f"Error trying update budget '{self.object.title}' in fields: {errors} by {self.request.user if self.request.user else "Anom"}",
+                extra = {
+                    "user": self.request.user if self.request.user.is_authenticated else None,
+                    "path": self.request.path,
+                    "method": self.request.method,
+                    "extra_data": {"identifier": str(self.object.identifier)},
+                }
+            )
             return self.form_invalid(form)
 
 class BudgetDeleteView(DeleteView):
