@@ -117,23 +117,6 @@ class BudgetUpdateView(UpdateView):
     def post(self, request, *args, **kwargs):
 
         self.object = self.get_object()
-
-        delete_file_id = request.POST.get('delete_file')
-
-        if delete_file_id:
-            file_to_delete = BudgetFile.objects.get(id=delete_file_id, budget=self.object)
-            file_to_delete.delete()
-            logger.info(
-                f'Budget "{file_to_delete.file.name}" files deleted from "{self.object.title}" by {self.request.user if self.request.user else "Anom"}',
-                extra={
-                    "user": self.request.user if self.request.user.is_authenticated else None,
-                    "path": self.request.path,
-                    "method": self.request.method,
-                    "extra_data": {"identifier": str(self.object.identifier)},
-                }
-            )
-            return redirect(request.path)
-        
         new_files = request.FILES.getlist('file')
 
         for new_file in new_files:
@@ -177,6 +160,22 @@ class BudgetUpdateView(UpdateView):
                 }
             )
             return self.form_invalid(form)
+
+def deleting_file_budget(request, file_id):
+        
+        file_to_delete = BudgetFile.objects.get(id=file_id)
+        budget = file_to_delete.budget
+        file_to_delete.delete()
+        logger.info(
+            f'Budget "{file_to_delete.file.name}" files deleted from "{budget.title}" by {request.user if request.user else "Anom"}',
+            extra={
+                "user": request.user if request.user.is_authenticated else None,
+                "path": request.path,
+                "method": request.method,
+                "extra_data": {"identifier": str(budget.identifier)},
+            }
+        )
+        return redirect("app:update_budget", identifier = budget.identifier)
 
 class BudgetDeleteView(DeleteView):
 

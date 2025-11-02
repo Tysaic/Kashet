@@ -11,6 +11,7 @@ urlpatterns = [
     path('budget/detail/<uuid:identifier>', views.BudgetDetailView.as_view(), name="detail_budget"),
     path('budget/edit/<uuid:identifier>', views.BudgetUpdateView.as_view(), name="update_budget"),
     path('budget/delete/<uuid:identifier>', views.BudgetDeleteView.as_view(), name = "delete_budget"),
+    path('budget/delete_file/<int:file_id>', views.deleting_file_budget, name="delete_file_budget"),
 
     path('bills/', views.bills, name="bills"),
     path('categories_bills/', views.categories_bills, name="categories_bills"),

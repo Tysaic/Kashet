@@ -85,87 +85,91 @@
                 {% endif %}
               </div>
 
-              <!-- Estado y Prioridad -->
-            <div class="col-12">
-              <label class="form-label fw-semibold mb-3 fs-5 d-block text-center">
-                Antecedentes o Comprobantes
-              </label>
-
-              <!-- Card contenedora de ancho completo -->
-              <div class="card shadow-sm border-0 rounded-4 w-100">
-                <div class="card-body p-4">
-
-                  <!-- Input de carga -->
-                  <div class="input-group mb-4">
-                    <span class="input-group-text bg-gradient text-white" style="background-color: #5b4bff;">
-                      <i class="ri-upload-2-line"></i>
-                    </span>
-                    {{ file_form.file }}
-                  </div>
-
-                  <!-- Lista de archivos -->
-                  {% if files %}
-                    <div class="table-responsive">
-                      <table class="table align-middle table-hover mb-0">
-                        <thead class="table-light">
-                          <tr>
-                            <th scope="col" class="text-start">Archivo</th>
-                            <th scope="col" class="text-end">Ver</th>
-                            <th scope="col" class="text-end">Eliminar</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {% for file in files %}
-                            <tr>
-                              <td class="text-start">
-                                <i class="ri-attachment-2 text-primary me-2 fs-5"></i>
-                                  {{ file.file|basename }}
-                              </td>
-                              <td class="text-end text-muted small">
-                                <a href="{{ file.file.url }}" target="_blank" class="text-decoration-none text-dark fw-medium">
-                                  <i class="ri-eye-line"></i>
-                                </a>
-                              </td>
-                              <td class="text-end">
-                                <form method="POST" style="display:inline;">
-                                  {% csrf_token %}
-                                  <input type="hidden" name="delete_file" value="{{ file.id }}">
-                                  <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Eliminar Archivo?')">
-                                    <i class="ri-delete-bin-line"></i>
-                                  </button>
-                                </form>
-                              </td>
-                            </tr>
-                          {% endfor %}
-                        </tbody>
-                      </table>
-                    </div>
-                  {% else %}
-                    <div class="alert alert-light text-center text-muted mb-0 py-3" role="alert">
-                      <i class="ri-information-line me-2"></i>No hay archivos adjuntos.
-                    </div>
-                  {% endif %}
-
+              <!-- Subir Archivo -->
+              <div class="col-12">
+                <label class="form-label fw-semibold mb-3 fs-5 d-block text-center">
+                  Subir Nuevo Archivo
+                </label>
+                <div class="input-group mb-4">
+                  <span class="input-group-text bg-gradient text-white" style="background-color: #5b4bff;">
+                    <i class="ri-upload-2-line"></i>
+                  </span>
+                  {{ file_form.file }}
                 </div>
               </div>
-            </div>
-            <div class="col-12">
-              <!-- Acciones -->
-              <div class="card custom-card">
-                <div class="card-body">
-                  <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">
-                      <i class="ri-save-line me-1"></i>Guardar Presupuesto
-                    </button>
-                    <a href="{% url 'app:detail_budget' budget.identifier %}" class="btn btn-outline-secondary">
-                      <i class="ri-arrow-left-line me-1"></i>Cancelar
-                    </a>
+
+              <!-- Acciones del Form Principal -->
+              <div class="col-12">
+                <div class="card custom-card">
+                  <div class="card-body">
+                    <div class="d-grid gap-2">
+                      <button type="submit" class="btn btn-primary">
+                        <i class="ri-save-line me-1"></i>Guardar Presupuesto
+                      </button>
+                      <a href="{% url 'app:detail_budget' budget.identifier %}" class="btn btn-outline-secondary">
+                        <i class="ri-arrow-left-line me-1"></i>Cancelar
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Lista de Archivos (Fuera del form principal) -->
+    <div class="col-12 mt-3">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">Archivos Adjuntos</div>
+        </div>
+        <div class="card-body">
+          {% if files %}
+            <div class="table-responsive">
+              <table class="table align-middle table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th scope="col" class="text-start">Archivo</th>
+                    <th scope="col" class="text-end">Ver</th>
+                    <th scope="col" class="text-end">Eliminar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for file in files %}
+                    <tr>
+                      <td class="text-start">
+                        <i class="ri-attachment-2 text-primary me-2 fs-5"></i>
+                        {{ file.file|basename }}
+                      </td>
+                      <td class="text-end text-muted small">
+                        <a href="{{ file.file.url }}" target="_blank" class="text-decoration-none text-dark fw-medium">
+                          <i class="ri-eye-line"></i>
+                        </a>
+                      </td>
+                      <td class="text-end">
+                        <form method="POST" action="{% url 'app:delete_file_budget' file.id %}" style="display:inline;">
+                          {% csrf_token %}
+                          <input type="hidden" name="delete_file" value="{{ file.id }}">
+                          <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Eliminar Archivo?')">
+                            <i class="ri-delete-bin-line"></i>
+                          </button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="alert alert-light text-center text-muted mb-0 py-3" role="alert">
+              <i class="ri-information-line me-2"></i>No hay archivos adjuntos.
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
         </div>
       </div>
     </div>
