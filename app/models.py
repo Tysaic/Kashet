@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as translate
 import uuid
 import os
 
@@ -37,6 +38,8 @@ class Budget(models.Model):
     )
     class Meta:
         ordering = ['-created_at']
+        verbose_name = translate("budget")
+        verbose_name_plural = translate("budgets")
     
     def __str__(self):
         return f"{self.title} - {self.description} - ({self.total_mount} {self.currency})"
@@ -47,8 +50,13 @@ class BudgetFile(models.Model):
     file = models.FileField(upload_to=budget_upload_path)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        verbose_name = translate("budget_file")
+        verbose_name_plural = translate("budget_files")
+
     def __str__(self):
         return self.file.name
+    
 
 # class TypeTransaction
 # class Departments
@@ -58,6 +66,10 @@ class Department(models.Model):
     name = models.CharField(max_length=32)
     created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = translate("department")
+        verbose_name_plural = translate("departments")        
 
     def __str__(self):
         return self.name
@@ -82,6 +94,8 @@ class ActivityLog(models.Model):
 
     class Meta:
         ordering = ['-timestamp']
+        verbose_name = translate("activity_log")
+        verbose_name_plural = translate("activity_logs")    
 
     def __str__(self):
         #return f'[{self.timestamp: %Y-%m-%d %H:%M}] {self.user or "System"} - self.action'
