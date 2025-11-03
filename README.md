@@ -16,7 +16,22 @@ python manage.py migrate
 ```
 python manage.py init_departments
 ```
+# Compilar messages i18n para multilenguaje
 
+por cada: `{% trans "`caracter a traducir`:" %}`
+
+ejecutar: `python manage.py compilemessages`
+
+y traducir en: 
+
+```
+locale\en\LC_MESSAGES\django.po
+
+#ejemplo:
+#: .\app\templates\index.html:40
+msgid "Nota:"
+msgstr "Note:"
+```
 
 ---
 ## Cómo subir tu código a este repositorio / How to upload your code to this repository

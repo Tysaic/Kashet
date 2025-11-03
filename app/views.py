@@ -4,6 +4,8 @@ from .models import (Budget, BudgetFile)
 from .forms import (BudgetForm, BudgetFileForm)
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView, DetailView
 from django.contrib import messages
+from django.utils.translation import gettext as translate
+from django.utils.translation import gettext_lazy
 import logging
 
 logger = logging.getLogger("app")
