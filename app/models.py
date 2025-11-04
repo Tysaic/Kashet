@@ -18,6 +18,7 @@ class Budget(models.Model):
     due_date = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    enable = models.BooleanField(default=True)
     status = models.ForeignKey(
         'StatusTransaction',
         on_delete = models.SET_NULL,
@@ -83,6 +84,7 @@ class Bill(models.Model):
     due_date = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    enable = models.BooleanField(default=True)
 
     budget = models.ForeignKey(
         'Budget',

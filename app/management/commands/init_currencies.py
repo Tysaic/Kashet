@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.utils.translation import gettext_lazy as translate
 from app.models import Currency
 
 
@@ -11,9 +12,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         currencies = [
-            {'name': 'Chilean Peso', 'code': 'CLP', 'symbol': '$'},
-            {'name': 'US Dollar', 'code': 'USD', 'symbol': '$'},
-            {'name': 'Euro', 'code': 'EUR', 'symbol': '€'},
+            {'name': translate('Chilean Peso'), 'code': 'CLP', 'symbol': '$'},
+            {'name': translate('US Dollar'), 'code': 'USD', 'symbol': '$'},
+            {'name': translate('Euro'), 'code': 'EUR', 'symbol': '€'},
         ]
 
         for currency in currencies:

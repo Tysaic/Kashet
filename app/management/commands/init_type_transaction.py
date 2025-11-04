@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.utils.translation import gettext_lazy as translate
 from app.models import TypeTransaction
 
 
@@ -11,10 +12,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         transaction_types = [
-            'Transferencia Bancaria',
-            'Efectivo',
-            'Orden de Pago',
-            'Debito/Credito',
+            translate('Transferencia Bancaria'),
+            translate('Efectivo'),
+            translate('Orden de Pago'),
+            translate('Debito/Credito'),
         ]
 
 

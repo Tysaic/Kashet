@@ -555,3 +555,21 @@ class BudgetDeleteView(TestCase):
 
 
 
+"""
+Testing Models:
+
+BILLS
+CURRENCY
+TYPETRANSACTION
+STATUS_TRANSACTION
+
+Views for the above models
+BILLS
+CURRENCY
+TYPETRANSACTION
+STATUS_TRANSACTION
+
+
+FIX Budget with news relationships
+
+"""

@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.utils.translation import gettext_lazy as translate
 from app.models import StatusTransaction
 
 
@@ -11,9 +12,9 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         status_types = [
-            'Aprobado',
-            'En espera',
-            'Rechazado',
+            translate('Aprobado'),
+            translate('En espera'),
+            translate('Rechazado'),
         ]
 
 
