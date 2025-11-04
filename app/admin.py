@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import (Budget, BudgetFile, Department, ActivityLog)
+from .models import (
+    Budget, BudgetFile, Department, 
+    Bill, BillFile, Currency,
+    TypeTransaction, StatusTransaction ,ActivityLog)
 
 
 class BudgetFileInLine(admin.TabularInline):
@@ -11,7 +14,7 @@ class BudgetAdmin(admin.ModelAdmin):
     list_display = (
         'title', 'total_mount', 
         'currency', 'created_at', 
-         'due_date','type', 'department'
+         'due_date','type', 'department',
         )
     search_fields = ('title', 'department')
     inlines = [BudgetFileInLine]
@@ -19,7 +22,33 @@ class BudgetAdmin(admin.ModelAdmin):
 @admin.register(BudgetFile)
 class BudgetFileAdmin(admin.ModelAdmin):
     list_display= ('budget', 'file')
-# Register your models here.
+
+@admin.register(StatusTransaction)
+class StatusTransactionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'created_at')
+
+
+class BillFileInLine(admin.TabularInline):
+    model = BillFile
+    extra = 1
+
+@admin.register(Bill)
+class BillAdmin(admin.ModelAdmin):
+    list_display = (
+        'title', 'total_mount', 
+        'currency', 'created_at', 
+         'due_date','type', 'department'
+        )
+    search_fields = ('title', 'department')
+    inlines = [BillFileInLine]
+    
+@admin.register(Currency)
+class CurrencyAdmin(admin.ModelAdmin):
+    list_display = ('name', 'code', 'symbol')
+
+@admin.register(TypeTransaction)
+class TypeTransactionAdmin(admin.ModelAdmin):
+    list_display = ('name', 'created_at')
 
 @admin.register(Department)
 class DepartmentsAdmin(admin.ModelAdmin):
@@ -31,3 +60,4 @@ class ActivityLogAdmin(admin.ModelAdmin):
     list_filter = ("level", "timestamp")#"user",)
     search_fields = ("action", "path",) #"user__username")
     ordering = ("-timestamp",)
+

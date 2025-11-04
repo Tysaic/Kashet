@@ -12,9 +12,9 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-# Iniciar departamentos por defecto
+# Iniciar Data por defecto
 ```
-python manage.py init_departments
+python manage.py init_all
 ```
 # Compilar messages i18n para multilenguaje
 
