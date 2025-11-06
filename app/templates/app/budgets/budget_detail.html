@@ -81,14 +81,16 @@
           <div class="card-title mb-2 mb-sm-0">{{ budget.title }}</div>
           <div class="d-flex flex-wrap gap-2">
             <a href="{% url 'app:list_budget' %}" class="btn btn-sm btn-secondary">
-              <i class="ri-arrow-left-line me-1"></i><span class="d-none d-sm-inline">Volver</span>
+              <i class="ri-arrow-left-line me-1"></i><span class="d-none d-sm-inline">{% trans "Volver" %}</span>
             </a>
+            {% if not budget.status.enable %}
             <a href="{% url 'app:update_budget' budget.identifier %}" class="btn btn-sm btn-primary">
-              <i class="ri-edit-line me-1"></i><span class="d-none d-sm-inline">Editar</span>
+              <i class="ri-edit-line me-1"></i><span class="d-none d-sm-inline">{% trans "Editar" %}</span>
             </a>
             <a href="{% url 'app:delete_budget' budget.identifier %}" class="btn btn-sm btn-danger">
-              <i class="ri-delete-bin-line me-1"></i><span class="d-none d-sm-inline">Eliminar</span>
+              <i class="ri-delete-bin-line me-1"></i><span class="d-none d-sm-inline">{% trans "Eliminar" %}</span>
             </a>
+            {% endif %}
           </div>
         </div>
         <div class="card-body">
@@ -124,7 +126,7 @@
               </div>
               <div class="mb-3">
                 <small class="text-muted d-block">Departamento</small>
-                <strong>{{ budget.department.name|default:"Sin departamento" }}</strong>
+                <strong>{{ budget.department.name }}</strong>
               </div>
             </div>
           </div>
@@ -135,14 +137,14 @@
               <small class="text-muted d-block">Fecha de Vencimiento</small>
               <strong class="d-block" style="color: #d63384;">{{ budget.due_date|date:"d/m/Y H:i"|default:"Sin fecha" }}</strong>
             </div>
-            <div class="col-lg-4 col-sm-6 col-12 mb-3 mb-lg-0">
+            <!-- <div class="col-lg-4 col-sm-6 col-12 mb-3 mb-lg-0">
               <small class="text-muted d-block">Fecha de Creación</small>
               <strong class="d-block">{{ budget.created_at|date:"d/m/Y H:i" }}</strong>
             </div>
             <div class="col-lg-4 col-sm-12 col-12">
               <small class="text-muted d-block">Última Actualización</small>
               <strong class="d-block">{{ budget.updated|date:"d/m/Y H:i" }}</strong>
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -173,7 +175,7 @@
           {% else %}
             <div class="text-center py-4">
               <i class="ri-file-unknow-line fs-1 text-muted"></i>
-              <p class="text-muted mt-2 mb-0">No hay archivos adjuntos</p>
+              <p class="text-muted mt-2 mb-0">{% trans "No hay archivos adjuntos" %}</p>
             </div>
           {% endif %}
         </div>
@@ -187,7 +189,7 @@
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <span class="text-muted">Estado:</span>
-            <span class="badge bg-success">Activo</span>
+            <span class="badge bg-success">{{ budget.status }}</span>
           </div>
           <div class="d-flex justify-content-between align-items-center mb-2">
             <span class="text-muted">Archivos:</span>
@@ -195,7 +197,7 @@
           </div>
           <div class="d-flex justify-content-between align-items-center mb-2">
             <span class="text-muted">Moneda:</span>
-            <strong>{{ budget.get_currency_display }}</strong>
+            <strong>{{ budget.currency }}</strong>
           </div>
         </div>
       </div>
