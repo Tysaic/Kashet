@@ -12,15 +12,17 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         status_types = [
-            translate('Aprobado'),
-            translate('En espera'),
-            translate('Rechazado'),
+            (translate('En Proceso'), False),
+            (translate('Aprobado'), True),
+            (translate('En espera'), False),
+            (translate('Rechazado'), True)
         ]
 
 
-        for name_status in status_types:
+        for name_status, able in status_types:
             obj, created = StatusTransaction.objects.get_or_create(
-                name = name_status
+                name = name_status,
+                enable = able
             )
 
             if created:

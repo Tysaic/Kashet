@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-03 19:34-0300\n"
+"POT-Creation-Date: 2025-11-06 19:54-0300\n"
 "PO-Revision-Date: 2025-11-03 19:40-0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,14 +17,55 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: .\app\templates\app\budgets\budget_add.html:12
+msgid "Agregar Presupuesto"
+msgstr ""
+
+#: .\app\templates\app\budgets\budget_add.html:21
+msgid "Información del Presupuesto"
+msgstr ""
+
+#: .\app\templates\app\budgets\budget_add.html:119
+msgid "Guardar Presupuesto"
+msgstr ""
+
+#: .\app\templates\app\budgets\budget_add.html:122
+msgid "Cancelar"
+msgstr ""
+
+#: .\app\templates\app\budgets\budget_detail.html:84
+msgid "Volver"
+msgstr ""
+
+#: .\app\templates\app\budgets\budget_detail.html:88
+msgid "Editar"
+msgstr ""
+
+#: .\app\templates\app\budgets\budget_detail.html:91
+msgid "Eliminar"
+msgstr ""
+
+#: .\app\templates\app\budgets\budget_detail.html:178
+msgid "No hay archivos adjuntos"
+msgstr ""
+
 #: .\app\templates\index.html:17
-msgid "Panel Principal"
-msgstr "Dashboard"
+msgid "Dashboard"
+msgstr ""
 
 #: .\app\templates\index.html:40
 msgid "Nota:"
 msgstr "Note:"
 
 #: .\app\templates\index.html:42
-msgid "Gracias por elegir nuestra plantilla. Si deseas crear tu propio proyecto personalizado, toma como referencia nuestro proyecto y puedes implementarlo aquí."
-msgstr "Thank you for choosing our template. If you want to create your own customized project, take our project as a reference and you can implement it here."
+msgid ""
+"Gracias por elegir nuestra plantilla. Si deseas crear tu propio proyecto "
+"personalizado, toma como referencia nuestro proyecto y puedes implementarlo "
+"aquí."
+msgstr ""
+"Thank you for choosing our template. If you want to create your own "
+"customized project, take our project as a reference and you can implement it "
+"here."
+
+#~ msgid "Panel Principal"
+#~ msgstr "Dashboard"

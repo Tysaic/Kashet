@@ -12,7 +12,7 @@ class BudgetFileInLine(admin.TabularInline):
 @admin.register(Budget)
 class BudgetAdmin(admin.ModelAdmin):
     list_display = (
-        'title', 'total_mount', 
+        'title', 'total_mount', 'edit',
         'currency', 'created_at', 
          'due_date','type', 'department',
         )

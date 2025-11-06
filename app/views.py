@@ -101,6 +101,21 @@ class BudgetUpdateView(UpdateView):
     slug_field = "identifier"
     slug_url_kwarg = "identifier"
 
+    def dispatch(self, request, *args, **kwargs):
+
+        # Block if is False to edit
+        self.object = self.get_object()
+        if not self.object.edit:
+
+            logger.warning(request, f"""El presupuesto "{self.object.title} - {self.object.identifier}" 
+                esta cerrado y no se puede editar, alguien intenta entrar a el
+                con el usuario {request.user}"""
+            )
+
+            return redirect('app:list_budget')
+    
+        return super().dispatch(request, *args, **kwargs)
+
     def get_success_url(self):
         return reverse_lazy("app:detail_budget", kwargs={'identifier': self.object.identifier})
     
@@ -121,6 +136,7 @@ class BudgetUpdateView(UpdateView):
         self.object = self.get_object()
         new_files = request.FILES.getlist('file')
 
+        #Uploading new files
         for new_file in new_files:
             logger.info(
                 f'{new_file} files add to Budget: "{self.object.title}" by {self.request.user if self.request.user else "Anom"}',
@@ -133,9 +149,15 @@ class BudgetUpdateView(UpdateView):
             )
             BudgetFile.objects.create(budget=self.object, file=new_file)
         
+        # Validing the form when editing
         form = self.form_class(request.POST, instance=self.object)
         if form.is_valid():
             self.object = form.save(commit=False)
+            
+            if self.object.status.enable:
+                # Disabling Editing if the status is enable to close
+                self.object.edit = False
+                
             self.object.save()
             logger.info(
             f'Budget "{self.object.title}" updated by {self.request.user if self.request.user else "Anom"}',
@@ -189,6 +211,22 @@ class BudgetDeleteView(DeleteView):
     def get_success_url(self):
         messages.success(self.request, f"Presupuesto {self.object.title} eliminado correctamente.")
         return reverse_lazy("app:list_budget")
+
+    def dispatch(self, request, *args, **kwargs):
+
+        # Block if is False to edit
+        self.object = self.get_object()
+
+        if not self.object.edit:
+
+            logger.warning(request, f"""El presupuesto "{self.object.title} - {self.object.identifier}" 
+                esta cerrado y no se puede eliminar, alguien intenta entrar a el
+                con el usuario {request.user}"""
+            )
+
+            return redirect('app:list_budget')
+    
+        return super().dispatch(request, *args, **kwargs)
 
 def bills(request):
     return render(request, 'app/bills/bills.html')

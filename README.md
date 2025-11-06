@@ -19,8 +19,12 @@ python manage.py init_all
 # Compilar messages i18n para multilenguaje
 
 por cada: `{% trans "`caracter a traducir`:" %}`
+```
+python manage.py makemessages -l en
+python manage.py makemessages -l es
 
-ejecutar: `python manage.py compilemessages`
+python manage.py compilemessages
+```
 
 y traducir en: 
 

@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as translate
@@ -18,7 +19,7 @@ class Budget(models.Model):
     due_date = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    enable = models.BooleanField(default=True)
+    edit = models.BooleanField(default=True)
     status = models.ForeignKey(
         'StatusTransaction',
         on_delete = models.SET_NULL,
@@ -84,7 +85,7 @@ class Bill(models.Model):
     due_date = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    enable = models.BooleanField(default=True)
+    edit = models.BooleanField(default=True)
 
     budget = models.ForeignKey(
         'Budget',
@@ -155,6 +156,28 @@ class Department(models.Model):
 
     def __str__(self):
         return self.name
+    
+    # Method to attribute of just reading.
+    # ca access with department.objects.get(id=1).get_total_budgets
+    @property
+    def get_total_budgets(self):
+        return self.budgets.aggregate(total = Sum('total_mount'))['total'] or 0
+
+    @property
+    def get_total_bills(self):
+        return self.bills.aggregate(total = Sum('total_mount'))['total'] or 0
+    
+    @property
+    def balance(self):
+        return self.get_total_budgets + self.get_total_bills
+    
+    @property
+    def get_budget_count(self):
+        return self.budgets.count()
+    
+    @property
+    def get_bills_count(self):
+        return self.bills.count()
 """---------DEPARTMENTS---------"""
 
 """---------CURRENCY---------"""
@@ -188,12 +211,16 @@ class TypeTransaction(models.Model):
 """---------STATUS_TRANSACTION---------"""
 class StatusTransaction(models.Model):
     name = models.CharField(max_length=32)
+    enable = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = translate("status_transaction")
         verbose_name_plural = translate("status_transactions")
+
+    def __str__(self):
+        return self.name
 """---------STATUS_TRANSACTION---------"""
 
 """---------ACTIVITY_LOG---------"""
