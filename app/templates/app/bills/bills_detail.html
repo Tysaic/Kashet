@@ -1,16 +1,171 @@
 {% extends 'components/base.html' %}
 {% load static %}
+{% load utils %}
 {% load i18n %}
 
 {% block styles %}
-<link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
 {% endblock %}
 
 {% block content %}
+<div class="container-fluid">
+  <!-- Page Header -->
+  <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
+    <h1 class="page-title fw-semibold fs-18 mb-2 mb-md-0">{% trans "Detalle del Gasto" %}</h1>
+    <div class="ms-md-1 ms-0">
+      <nav>
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="{% url 'app:index' %}">{% trans "Dashboard" %}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'app:list_bills' %}">{% trans "Gastos" %}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{% trans "Detalle" %}</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <div class="row">
+    <!-- Main Information -->
+    <div class="col-xl-8 col-lg-7 col-md-12 mb-3 mb-xl-0">
+      <div class="card custom-card detail-card">
+        <div class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center">
+          <div class="card-title mb-2 mb-sm-0">{{ bill.title }}</div>
+          <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'app:list_bills' %}" class="btn btn-sm btn-secondary">
+              <i class="ri-arrow-left-line me-1"></i><span class="d-none d-sm-inline">{% trans "Volver" %}</span>
+            </a>
+            {% if not bill.status.enable %}
+            <a href="{% url 'app:update_bill' bill.identifier %}" class="btn btn-sm btn-primary">
+              <i class="ri-edit-line me-1"></i><span class="d-none d-sm-inline">{% trans "Editar" %}</span>
+            </a>
+            <a href="{% url 'app:delete_bill' bill.identifier %}" class="btn btn-sm btn-danger">
+              <i class="ri-delete-bin-line me-1"></i><span class="d-none d-sm-inline">{% trans "Eliminar" %}</span>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Bill Details -->
+          <div class="row mb-4">
+            <div class="col-lg-6 col-12 mb-4 mb-lg-0">
+              <h6 class="fw-semibold text-muted mb-3">{% trans "Información General" %}</h6>
+              <div class="mb-3">
+                <small class="text-muted d-block">{% trans "Título" %}</small>
+                <strong class="d-block text-break">{{ bill.title }}</strong>
+              </div>
+              <div class="mb-3">
+                <small class="text-muted d-block">{% trans "Descripción" %}</small>
+                <p class="mb-0 text-break">{{ bill.description|default:"Sin descripción" }}</p>
+              </div>
+              <div class="mb-3">
+                <small class="text-muted d-block">{% trans "Identificador" %}</small>
+                <code class="d-block text-break" style="word-break: break-all;">{{ bill.identifier }}</code>
+              </div>
+              <div class="mb-3">
+                <small class="text-muted d-block">{% trans "Presupuesto Asociado" %}</small>
+                <strong>{{ bill.budget.title }} - {{ bill.budget.description }}</strong>
+              </div>
+            </div>
+            
+            <div class="col-lg-6 col-12">
+              <h6 class="fw-semibold text-muted mb-3">{% trans "Detalles Financieros" %}</h6>
+              <div class="mb-3">
+                <small class="text-muted d-block">{% trans "Monto Total" %}</small>
+                <h4 class="text-danger mb-0">
+                  {{ bill.total_mount|floatformat:0 }} {{ bill.currency }}
+                </h4>
+              </div>
+              <div class="mb-3">
+                <small class="text-muted d-block">{% trans "Tipo de Transacción" %}</small>
+                <span class="badge bg-danger-transparent">{{ bill.type.name }}</span>
+              </div>
+              <div class="mb-3">
+                <small class="text-muted d-block">{% trans "Departamento" %}</small>
+                <span class="badge bg-purple-transparent">{{ bill.department.name }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dates -->
+          <div class="row mb-4">
+            <div class="col-lg-4 col-sm-6 col-12 mb-3 mb-lg-0">
+              <small class="text-muted d-block">{% trans "Fecha de Vencimiento" %}</small>
+              <strong class="d-block" style="color: #d63384;">{{ bill.due_date|date:"d/m/Y H:i"|default:"Sin fecha" }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Files -->
+    <div class="col-xl-4 col-lg-5 col-md-12">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">{% trans "Archivos Adjuntos" %} ({{ files.count }})</div>
+        </div>
+        <div class="card-body">
+          {% if files %}
+            <div class="list-group">
+              {% for file in files %}
+                <a href="{{ file.file.url }}" target="_blank" class="list-group-item list-group-item-action file-item">
+                  <div class="d-flex align-items-center">
+                    <i class="ri-file-line fs-4 me-2 me-sm-3 text-primary flex-shrink-0"></i>
+                    <div class="flex-grow-1 overflow-hidden">
+                      <h6 class="mb-1 text-truncate">{{ file.file|basename }}</h6>
+                      <small class="text-muted d-block">{{ file.uploaded_at|date:"d/m/Y H:i" }}</small>
+                    </div>
+                    <i class="ri-download-line text-muted ms-2 flex-shrink-0"></i>
+                  </div>
+                </a>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-center py-4">
+              <i class="ri-file-unknow-line fs-1 text-muted"></i>
+              <p class="text-muted mt-2 mb-0">{% trans "No hay archivos adjuntos" %}</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Additional Info Card -->
+      <div class="card custom-card mt-3">
+        <div class="card-header">
+          <div class="card-title">{% trans "Resumen" %}</div>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted">{% trans "Estado:" %}</span>
+            <span class="badge bg-success">{{ bill.status }}</span>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted">{% trans "Archivos:" %}</span>
+            <strong>{{ files.count }}</strong>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted">{% trans "Moneda:" %}</span>
+            <strong>{{ bill.currency }}</strong>
+          </div>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="text-muted">{% trans "Presupuesto:" %}</span>
+            <strong class="text-truncate ms-2">{{ bill.budget.title }}</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-
+  // Formatear el monto con separadores de miles
+  document.addEventListener('DOMContentLoaded', function() {
+    const amountElement = document.querySelector('.text-danger');
+    if (amountElement) {
+      let amount = amountElement.textContent.trim().split(' ')[0];
+      let currency = amountElement.textContent.trim().split(' ')[1];
+      let formatted = parseFloat(amount.replace(/,/g, '')).toLocaleString('es-CL');
+      amountElement.textContent = formatted + ' ' + currency;
+    }
+  });
 </script>
 {% endblock %}

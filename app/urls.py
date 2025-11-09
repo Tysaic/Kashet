@@ -13,8 +13,12 @@ urlpatterns = [
     path('budget/delete/<uuid:identifier>', views.BudgetDeleteView.as_view(), name = "delete_budget"),
     path('budget/delete_file/<int:file_id>', views.deleting_file_budget, name="delete_file_budget"),
 
-    path('bills/', views.bills, name="list_bills"),
-    path('add_bill/', views.BillCreateView.as_view(), name="add_bill"),
+    path('list_bills/', views.BillListView.as_view(), name="list_bills"),
+    path('bills/add_bill/', views.BillCreateView.as_view(), name="add_bill"),
+    path('bills/detail/<uuid:identifier>', views.BillDetailView.as_view(), name='detail_bill'),
+    path('bills/edit/<uuid:identifier>', views.BillUpdateView.as_view(), name='update_bill'),
+    path('bills/delete/<uuid:identifier>', views.BillDeleteView.as_view(), name='delete_bill'),
+    path('bills/delete_file/<uuid:identifier>', views.deleting_file_bill, name='delete_file_bill'),
 
     path('categories_bills/', views.categories_bills, name="categories_bills"),
     path('bills_reports/', views.bills_reports, name="bills_reports"),

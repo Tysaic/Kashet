@@ -10,7 +10,7 @@ import logging
 
 logger = logging.getLogger("app")
 
-# Create your views here.
+# -- INDEX --
 
 def index (request):
     logger.info(f"User {request.user} init in index", extra={
@@ -20,9 +20,10 @@ def index (request):
     })
     return render(request, 'index.html')
 
-
 def resume_budget(request):
     return render(request, 'app/budgets/budget.html')
+
+# ---- BUDGET ----
 
 class BudgetListView(ListView):
     model = Budget
@@ -31,7 +32,6 @@ class BudgetListView(ListView):
 
     def get_queryset(self):
         return Budget.objects.all().order_by('-created_at')
-
 
 class BudgetCreateView(CreateView):
     model = Budget
@@ -228,15 +228,16 @@ class BudgetDeleteView(DeleteView):
     
         return super().dispatch(request, *args, **kwargs)
 
-def bills(request):
-    return render(request, 'app/bills/bills.html')
+# ---- BILL ----
 
-def categories_bills(request):
-    return render(request, 'app/bills/bills_categories.html')
+class BillListView(ListView):
+    model = Bill
+    template_name = 'app/bills/bills_list.html'
+    context_object_name = 'bills'
 
-def bills_reports(request):
-    return render(request, 'app/bills/bills_reports.html')
-
+    def get_queryset(self):
+        return Bill.objects.all().order_by('-created_at')
+    
 class BillCreateView(CreateView):
 
     model = Bill
@@ -285,6 +286,159 @@ class BillCreateView(CreateView):
         )
         return super().form_invalid(form)
 
+class BillDetailView(DetailView):
+    model = Bill
+    template_name = "app/bills/bills_detail.html"
+    context_object_name = "bill"
+    slug_field = "identifier"
+    slug_url_kwarg = "identifier"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['files'] = self.object.upload_folders.all()
+        return context
+
+class BillUpdateView(UpdateView):
+    model = Bill
+    form_class = BillForm
+    template_name = "app/bills/bills_update.html"
+    slug_field = "identifier"
+    slug_url_kwarg = "identifier"
+
+    def dispatch(self, request, *args, **kwargs):
+
+        # Block if is False to edit
+        self.object = self.get_object()
+        if not self.object.edit:
+
+            logger.warning(request, f"""El presupuesto "{self.object.title} - {self.object.identifier}" 
+                esta cerrado y no se puede editar, alguien intenta entrar a el
+                con el usuario {request.user}"""
+            )
+
+            return redirect('app:list_bills')
+    
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_success_url(self):
+        return reverse_lazy("app:detail_bills", kwargs={'identifier': self.object.identifier})
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+
+        if self.request.POST:
+            context['file_form'] = BillFileForm(self.request.POST)
+        else:
+            context['file_form'] = BillFileForm()
+            context['files'] = self.object.upload_folders.all()
+        
+        return context
+
+    def post(self, request, *args, **kwargs):
+
+        self.object = self.get_object()
+        new_files = request.FILES.getlist('file')
+
+        #Uploading new files
+        for new_file in new_files:
+            logger.info(
+                f'{new_file} files add to Budget: "{self.object.title}" by {self.request.user if self.request.user else "Anom"}',
+                extra={
+                    "user": self.request.user if self.request.user.is_authenticated else None,
+                    "path": self.request.path,
+                    "method": self.request.method,
+                    "extra_data": {"identifier": str(self.object.identifier)},
+                }
+            )
+            BillFile.objects.create(budget=self.object, file=new_file)
+        
+        # Validing the form when editing
+        form = self.form_class(request.POST, instance=self.object)
+        if form.is_valid():
+            self.object = form.save(commit=False)
+            
+            if self.object.status.enable:
+                # Disabling Editing if the status is enable to close
+                self.object.edit = False
+                
+            self.object.save()
+            logger.info(
+            f'Bill "{self.object.title}" updated by {self.request.user if self.request.user else "Anom"}',
+                extra={
+                    "user": self.request.user if self.request.user.is_authenticated else None,
+                    "path": self.request.path,
+                    "method": self.request.method,
+                    "extra_data": {"identifier": str(self.object.identifier)},
+                }
+            )
+            return redirect("app:list_bills")
+        else:
+            errors = []
+            for field, _list in form.errors.items():
+                label = form.fields[field].label if field in form.fields else field
+                errors.append(label)
+            logger.warning(
+                f"Error trying update bill '{self.object.title}' in fields: {errors} by {self.request.user if self.request.user else "Anom"}",
+                extra = {
+                    "user": self.request.user if self.request.user.is_authenticated else None,
+                    "path": self.request.path,
+                    "method": self.request.method,
+                    "extra_data": {"identifier": str(self.object.identifier)},
+                }
+            )
+            return self.form_invalid(form)
+
+def deleting_file_bill(request, file_id):
+        
+        file_to_delete = BillFile.objects.get(id=file_id)
+        bill = file_to_delete.bill
+        file_to_delete.delete()
+        logger.info(
+            f'Bill "{file_to_delete.file.name}" files deleted from "{bill.title}" by {request.user if request.user else "Anom"}',
+            extra={
+                "user": request.user if request.user.is_authenticated else None,
+                "path": request.path,
+                "method": request.method,
+                "extra_data": {"identifier": str(bill.identifier)},
+            }
+        )
+        return redirect("app:update_bill", identifier = bill.identifier)
+
+class BillDeleteView(DeleteView):
+
+    model = Bill
+    template_name = "app/bills/bills_delete.html"
+    slug_field = "identifier"
+    slug_url_kwarg = "identifier"
+
+    def get_success_url(self):
+        messages.success(self.request, f"Gasto {self.object.title} eliminado correctamente.")
+        return reverse_lazy("app:list_bills")
+
+    def dispatch(self, request, *args, **kwargs):
+
+        # Block if is False to edit
+        self.object = self.get_object()
+
+        if not self.object.edit:
+
+            logger.warning(request, f"""El Gasto "{self.object.title} - {self.object.identifier}" 
+                esta cerrado y no se puede eliminar, alguien intenta entrar a el
+                con el usuario {request.user}"""
+            )
+
+            return redirect('app:list_bills')
+    
+        return super().dispatch(request, *args, **kwargs)
+
+def categories_bills(request):
+    return render(request, 'app/bills/bills_categories.html')
+
+def bills_reports(request):
+    return render(request, 'app/bills/bills_reports.html')
+
+# ---- DEPARTMENT ----
 
 def departments(request):
     return render(request, 'app/departments/departments.html')
