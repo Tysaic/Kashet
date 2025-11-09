@@ -167,7 +167,7 @@
                         </a>
                       </td>
                       <td class="text-end">
-                        <form method="POST" action="" style="display:inline;">
+                        <form method="POST" action="{% url 'app:delete_file_bill' file.id %}" style="display:inline;">
                           {% csrf_token %}
                           <input type="hidden" name="delete_file" value="{{ file.id }}">
                           <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('¿Eliminar Archivo?')">
