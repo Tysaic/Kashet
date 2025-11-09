@@ -3,11 +3,24 @@ from django.db.models import Sum
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as translate
+from django.utils import timezone
 import uuid
 import os
 
 
 """---------BUDGET---------"""
+
+def returning_title_to_bill_and_budget(due_date, department, title, total_mount, currency):
+    MONTHS = [
+        translate('Enero'), translate('Febrero'), translate('Marzo'),
+        translate('Abril'), translate('Mayo'), translate('Junio'),
+        translate('Julio'), translate('Agosto'), translate('septiembre'),
+        translate('Octubre'), translate('Noviembre'), translate('Diciembre'),
+    ]
+    month_date = MONTHS[ due_date.month -1 ]
+    title_to_str = f"{month_date} - {department} - {title} - ({total_mount} {currency})"
+    return  title_to_str
+
 def budget_upload_path(instance, filename):
     return os.path.join('budgets', str(instance.budget.identifier), filename)
 
@@ -16,15 +29,15 @@ class Budget(models.Model):
     description = models.TextField(blank=True)
     total_mount = models.DecimalField(max_digits=24, decimal_places=0, validators=[MinValueValidator(0.01, message="Monto debe ser positivo.")])
     identifier = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    due_date = models.DateTimeField(null=True, blank=True)
+    due_date = models.DateTimeField(null=True, blank=True, default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     edit = models.BooleanField(default=True)
     status = models.ForeignKey(
         'StatusTransaction',
-        on_delete = models.SET_NULL,
-        null=True,
-        blank=True,
+        on_delete = models.PROTECT,
+        null=False,
+        blank=False,
         related_name='budgets',
     )
     type = models.ForeignKey(
@@ -44,9 +57,9 @@ class Budget(models.Model):
     
     department = models.ForeignKey(
         'Department', 
-        null=True, 
-        blank=True, 
-        on_delete=models.SET_NULL, 
+        null=False, 
+        blank=False, 
+        on_delete=models.PROTECT, 
         related_name='budgets'
     )
     class Meta:
@@ -55,7 +68,11 @@ class Budget(models.Model):
         verbose_name_plural = translate("budgets")
     
     def __str__(self):
-        return f"{self.title} - {self.description} - ({self.total_mount} {self.currency})"    
+        return returning_title_to_bill_and_budget(
+            self.due_date, self.department, self.title, 
+            self.total_mount, self.currency
+        )
+
 
 class BudgetFile(models.Model):
     budget = models.ForeignKey(Budget, related_name="upload_folders", on_delete=models.CASCADE)
@@ -84,7 +101,7 @@ class Bill(models.Model):
         MinValueValidator(0.01, message="Monto debe ser positivo.")]
     )
     identifier = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    due_date = models.DateTimeField(null=True, blank=True)
+    due_date = models.DateTimeField(null=True, blank=True, default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     edit = models.BooleanField(default=True)
@@ -93,34 +110,36 @@ class Bill(models.Model):
         'Budget',
         on_delete=models.PROTECT,
         related_name='bills',
-        null=True,
-        blank=True
+        null=False,
+        blank=False
     )
     status = models.ForeignKey(
         'StatusTransaction',
-        on_delete = models.SET_NULL,
-        null=True,
-        blank=True,
+        on_delete = models.PROTECT,
+        null=False,
+        blank=False,
         related_name='bills',
     )
     type = models.ForeignKey(
         'TypeTransaction', 
         null=False, 
         blank=False, 
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        related_name='bills',
     )
     currency = models.ForeignKey(
         'Currency', 
         null=False, 
         blank=False, 
-        on_delete=models.PROTECT
+        on_delete=models.PROTECT,
+        related_name='bills',
     )
 
     department = models.ForeignKey(
         'Department', 
-        null=True, 
-        blank=True, 
-        on_delete=models.SET_NULL, 
+        null=False, 
+        blank=False, 
+        on_delete=models.PROTECT, 
         related_name='bills'
     )
 
@@ -130,11 +149,14 @@ class Bill(models.Model):
         verbose_name_plural = translate("bills")
     
     def __str__(self):
-        return f"{self.title} - {self.description} - ({self.total_mount} {self.currency})"   
+        return returning_title_to_bill_and_budget(
+            self.due_date, self.department, self.title, 
+            self.total_mount, self.currency
+        )
     
 class BillFile(models.Model):
     bill = models.ForeignKey(Bill, related_name="upload_folders", on_delete=models.CASCADE)
-    file = models.FileField(upload_to=budget_upload_path)
+    file = models.FileField(upload_to=bill_upload_path)
     uploaded_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

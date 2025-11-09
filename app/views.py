@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from .models import (Budget, BudgetFile, Bill, BillFile)
-from .forms import (BudgetForm, BudgetFileForm, BillForm)
+from .forms import (BudgetForm, BudgetFileForm, BillForm, BillFileForm)
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView, DetailView
 from django.contrib import messages
 from django.utils.translation import gettext as translate
@@ -244,6 +244,15 @@ class BillCreateView(CreateView):
     template_name = 'app/bills/bills_add.html'
     success_url = reverse_lazy('app:list_bills')
 
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.POST:
+            context['file_form'] = BillFileForm(self.request.POST, self.request.FILES)
+        else:
+            context['file_form'] = BillFileForm()
+        return context
+
     def form_valid(self, form):
         context = self.get_context_data()
         # Guardando el formulario del modelo Budget
@@ -252,7 +261,7 @@ class BillCreateView(CreateView):
         # Guardando los archivos asociados si es necesario
         files = self.request.FILES.getlist('file')
         for _file in files:
-            BillFile.objects.create(budget=self.object, file=_file)
+            BillFile.objects.create(bill=self.object, file=_file)
         
         logger.info(
             f'Budget "{self.object.title}" created by {self.request.user if self.request.user else "Anom"}',
@@ -263,8 +272,6 @@ class BillCreateView(CreateView):
                 "extra_data": {"identifier": str(self.object.identifier)},
             }
         )
-
-        # agregar logs aca
         return response
 
     def form_invalid(self, form):
@@ -278,8 +285,6 @@ class BillCreateView(CreateView):
         )
         return super().form_invalid(form)
 
-def bills_add(request):
-    return render(request, 'app/bills/bills_add.html')
 
 def departments(request):
     return render(request, 'app/departments/departments.html')
