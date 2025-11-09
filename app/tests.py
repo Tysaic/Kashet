@@ -556,6 +556,10 @@ class BudgetDeleteView(TestCase):
 
 
 """
+New testing with new fields of Budget:
+
+* edit
+
 Testing Models:
 
 BILLS

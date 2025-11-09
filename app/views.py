@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
-from .models import (Budget, BudgetFile)
-from .forms import (BudgetForm, BudgetFileForm)
+from .models import (Budget, BudgetFile, Bill, BillFile)
+from .forms import (BudgetForm, BudgetFileForm, BillForm)
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView, DetailView
 from django.contrib import messages
 from django.utils.translation import gettext as translate
@@ -20,6 +20,10 @@ def index (request):
     })
     return render(request, 'index.html')
 
+
+def resume_budget(request):
+    return render(request, 'app/budgets/budget.html')
+
 class BudgetListView(ListView):
     model = Budget
     template_name = 'app/budgets/budget_list.html'
@@ -27,11 +31,7 @@ class BudgetListView(ListView):
 
     def get_queryset(self):
         return Budget.objects.all().order_by('-created_at')
-# def budget(request):
-#     return render(request, 'app/budgets/budget.html')
 
-def resume_budget(request):
-    return render(request, 'app/budgets/budget.html')
 
 class BudgetCreateView(CreateView):
     model = Budget
@@ -236,6 +236,47 @@ def categories_bills(request):
 
 def bills_reports(request):
     return render(request, 'app/bills/bills_reports.html')
+
+class BillCreateView(CreateView):
+
+    model = Bill
+    form_class = BillForm
+    template_name = 'app/bills/bills_add.html'
+    success_url = reverse_lazy('app:list_bills')
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        # Guardando el formulario del modelo Budget
+        response = super().form_valid(form)
+        
+        # Guardando los archivos asociados si es necesario
+        files = self.request.FILES.getlist('file')
+        for _file in files:
+            BillFile.objects.create(budget=self.object, file=_file)
+        
+        logger.info(
+            f'Budget "{self.object.title}" created by {self.request.user if self.request.user else "Anom"}',
+            extra={
+                "user": self.request.user if self.request.user.is_authenticated else None,
+                "path": self.request.path,
+                "method": self.request.method,
+                "extra_data": {"identifier": str(self.object.identifier)},
+            }
+        )
+
+        # agregar logs aca
+        return response
+
+    def form_invalid(self, form):
+        logger.exception(
+            f'Error validing Budget {self.object.title} created by {self.request.user if self.request.user else "Anom"}',
+            extra={
+                "user": self.request.user if self.request.user.is_authenticated else None,
+                "path": self.request.path,
+                "method": self.request.method,
+            }
+        )
+        return super().form_invalid(form)
 
 def bills_add(request):
     return render(request, 'app/bills/bills_add.html')

@@ -13,7 +13,7 @@ urlpatterns = [
     path('budget/delete/<uuid:identifier>', views.BudgetDeleteView.as_view(), name = "delete_budget"),
     path('budget/delete_file/<int:file_id>', views.deleting_file_budget, name="delete_file_budget"),
 
-    path('bills/', views.bills, name="bills"),
+    path('bills/', views.bills, name="list_bills"),
     path('categories_bills/', views.categories_bills, name="categories_bills"),
     path('bills_reports/', views.bills_reports, name="bills_reports"),
     path('bills_add/', views.bills_add, name="bills_add"),
