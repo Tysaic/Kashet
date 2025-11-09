@@ -25,7 +25,7 @@
   <div class="card custom-card">
     <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
       <div class="card-title mb-2 mb-sm-0">{% trans "Lista de Gastos" %}</div>
-      <span class="badge bg-primary-transparent">{% trans "Total:" %} {{ bills.count }}</span>
+      <span class="badge bg-primary-transparent">{% trans "Total:" %} {{ paginator.count|default:bills.count }}</span>
     </div>
     <div class="card-body p-2 p-md-3">
       

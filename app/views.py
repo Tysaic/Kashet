@@ -29,6 +29,7 @@ class BudgetListView(ListView):
     model = Budget
     template_name = 'app/budgets/budget_list.html'
     context_object_name = 'budgets'
+    paginate_by = 10
 
     def get_queryset(self):
         return Budget.objects.all().order_by('-created_at')
@@ -234,6 +235,7 @@ class BillListView(ListView):
     model = Bill
     template_name = 'app/bills/bills_list.html'
     context_object_name = 'bills'
+    paginate_by = 10
 
     def get_queryset(self):
         return Bill.objects.all().order_by('-created_at')
