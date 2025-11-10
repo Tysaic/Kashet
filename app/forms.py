@@ -1,5 +1,5 @@
 from django import forms
-from .models import (Budget, BudgetFile, Bill, BillFile)
+from .models import (Budget, BudgetFile, Bill, BillFile, CategoryBill)
 from django.utils.formats import number_format
 from django.utils.translation import gettext_lazy as translate
 from .models import StatusTransaction
@@ -136,3 +136,20 @@ class BillFileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['file'].required = False
+
+class CategoryBillForm(forms.ModelForm):
+
+    class Meta:
+        model = CategoryBill
+        fields = ['name', 'description', 'parent']
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': translate('Ingrese el nombre de la categoria')}),
+            'description': forms.Textarea(attrs={'rows':4, 'class': 'form-control', 'placeholder': translate('Descripcion detallada de la categoria ...')}),
+            'parent': forms.Select(attrs={'class': 'form-select', 'placeholder': translate('Selecciones una categoria padre si aplica.')})
+        }
+
+        labels = {
+            'name': translate('Nombre de la categoria'),
+            'description': translate('Descripcion'),
+            'parent': translate('Categoria Padre (Opcional)'),
+        }

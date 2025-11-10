@@ -21,6 +21,7 @@ urlpatterns = [
     path('bills/delete_file/<int:file_id>', views.deleting_file_bill, name='delete_file_bill'),
 
     path('categories_bills/', views.CategoryBillsList.as_view(), name="categories_bills"),
+    path('categories_bills/add/', views.CategoryBillCreateView.as_view(), name="categories_bills_add"),
 
 
     path('bills_reports/', views.bills_reports, name="bills_reports"),

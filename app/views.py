@@ -4,7 +4,9 @@ from .models import (
     Budget, BudgetFile, Bill, BillFile,
     CategoryBill
 )
-from .forms import (BudgetForm, BudgetFileForm, BillForm, BillFileForm)
+from .forms import (
+    BudgetForm, BudgetFileForm, BillForm, 
+    BillFileForm, CategoryBillForm)
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView, DetailView
 from django.contrib import messages
 from django.utils.translation import gettext as translate
@@ -447,15 +449,22 @@ class BillDeleteView(DeleteView):
             return redirect('app:list_bills')
     
         return super().dispatch(request, *args, **kwargs)
-
+# ---- BILL CATEGORIES ----
 class CategoryBillsList(ListView):
-    template_name = 'app/bills/bills_categories.html'
+    template_name = 'app/bills/categories/bills_categories.html'
     model = CategoryBill
     context_object_name = 'categories'
     paginate_by = 10
     
     def get_queryset(self):
         return CategoryBill.objects.all().order_by('name')
+
+class CategoryBillCreateView(CreateView):
+    model = CategoryBill
+    form_class = CategoryBillForm
+    template_name = 'app/bills/categories/bills_categories_add.html'
+    success_url = reverse_lazy('app:categories_bills')
+
 
 def bills_reports(request):
     return render(request, 'app/bills/bills_reports.html')
