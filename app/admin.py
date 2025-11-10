@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     Budget, BudgetFile, Department, 
-    Bill, BillFile, Currency,
+    Bill, BillFile, Currency, CategoryBill,
     TypeTransaction, StatusTransaction ,ActivityLog)
 
 
@@ -61,3 +61,6 @@ class ActivityLogAdmin(admin.ModelAdmin):
     search_fields = ("action", "path",) #"user__username")
     ordering = ("-timestamp",)
 
+@admin.register(CategoryBill)
+class CategoryBillAdmin(admin.ModelAdmin):
+    list_display = ('name', 'description')

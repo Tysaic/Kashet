@@ -10,7 +10,8 @@ class Command(BaseCommand):
             
             commands = [
                 'init_departments', 'init_currencies', 
-                'init_type_transaction', 'init_status_transaction'
+                'init_type_transaction', 'init_status_transaction',
+                'init_bills_categories'
             ]
             for command in commands:
                 call_command(command)

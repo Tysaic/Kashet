@@ -74,9 +74,11 @@
                 <a href="{% url 'app:detail_bill' bill.identifier %}" class="btn btn-sm btn-primary">
                   <i class="ri-eye-line"></i><span class="d-none d-sm-inline ms-1">{% trans "Ver" %}</span>
                 </a>
+                {% if bill.edit %}
                 <a href="{% url 'app:update_bill' bill.identifier %}" class="btn btn-sm btn-primary">
                   <i class="ri-edit-line me-1"></i><span class="d-none d-sm-inline">{% trans "Editar" %}</span>
                 </a>
+                {% endif %}
               </div>
             </div>
           </div>

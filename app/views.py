@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
-from .models import (Budget, BudgetFile, Bill, BillFile)
+from .models import (
+    Budget, BudgetFile, Bill, BillFile,
+    CategoryBill
+)
 from .forms import (BudgetForm, BudgetFileForm, BillForm, BillFileForm)
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView, DetailView
 from django.contrib import messages
@@ -52,25 +55,31 @@ class BudgetCreateView(CreateView):
     def form_valid(self, form):
         context = self.get_context_data()
         # Guardando el formulario del modelo Budget
-        response = super().form_valid(form)
+        #response = super().form_valid(form)
+        _object = form.save(commit=False)
+
+        if _object.status.enable:
+            _object.edit = False
+        
+        _object.save()
         
         # Guardando los archivos asociados si es necesario
         files = self.request.FILES.getlist('file')
         for _file in files:
-            BudgetFile.objects.create(budget=self.object, file=_file)
+            BudgetFile.objects.create(budget=_object, file=_file)
         
         logger.info(
-            f'Budget "{self.object.title}" created by {self.request.user if self.request.user else "Anom"}',
+            f'Budget "{_object.title}" created by {self.request.user if self.request.user else "Anom"}',
             extra={
                 "user": self.request.user if self.request.user.is_authenticated else None,
                 "path": self.request.path,
                 "method": self.request.method,
-                "extra_data": {"identifier": str(self.object.identifier)},
+                "extra_data": {"identifier": str(_object.identifier)},
             }
         )
 
-        # agregar logs aca
-        return response
+        #return response
+        return redirect(self.success_url)
 
     def form_invalid(self, form):
         logger.exception(
@@ -259,23 +268,28 @@ class BillCreateView(CreateView):
     def form_valid(self, form):
         context = self.get_context_data()
         # Guardando el formulario del modelo Budget
-        response = super().form_valid(form)
+        _object = form.save(commit=False)
+
+        if _object.status.enable:
+            _object.edit = False
+        
+        _object.save()
         
         # Guardando los archivos asociados si es necesario
         files = self.request.FILES.getlist('file')
         for _file in files:
-            BillFile.objects.create(bill=self.object, file=_file)
+            BillFile.objects.create(bill=_object, file=_file)
         
         logger.info(
-            f'Budget "{self.object.title}" created by {self.request.user if self.request.user else "Anom"}',
+            f'Budget "{_object.title}" created by {self.request.user if self.request.user else "Anom"}',
             extra={
                 "user": self.request.user if self.request.user.is_authenticated else None,
                 "path": self.request.path,
                 "method": self.request.method,
-                "extra_data": {"identifier": str(self.object.identifier)},
+                "extra_data": {"identifier": str(_object.identifier)},
             }
         )
-        return response
+        return redirect(self.success_url)
 
     def form_invalid(self, form):
         logger.exception(
@@ -434,8 +448,14 @@ class BillDeleteView(DeleteView):
     
         return super().dispatch(request, *args, **kwargs)
 
-def categories_bills(request):
-    return render(request, 'app/bills/bills_categories.html')
+class CategoryBillsList(ListView):
+    template_name = 'app/bills/bills_categories.html'
+    model = CategoryBill
+    context_object_name = 'categories'
+    paginate_by = 10
+    
+    def get_queryset(self):
+        return CategoryBill.objects.all().order_by('name')
 
 def bills_reports(request):
     return render(request, 'app/bills/bills_reports.html')

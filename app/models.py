@@ -143,6 +143,14 @@ class Bill(models.Model):
         related_name='bills'
     )
 
+    category = models.ForeignKey(
+        'CategoryBill',
+        on_delete=models.PROTECT,
+        related_name='bills',
+        null=True,
+        blank=True
+    )
+
     class Meta:
         ordering = ['-created_at']
         verbose_name = translate("bill")
@@ -166,6 +174,54 @@ class BillFile(models.Model):
     def __str__(self):
         return self.file.name
 """---------BILLS---------"""
+
+"""---------CATEGORIES BILLS---------"""
+class CategoryBill(models.Model):
+    name = models.CharField(max_length=32)
+    description = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    parent = models.ForeignKey(
+        'self',
+        on_delete = models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name = 'subcategories',
+    )
+
+    def __str__(self):
+        if self.parent:
+            return f"{self.parent.name} -> {self.name}"
+        return self.name
+    
+    class Meta:
+        verbose_name = translate("category_bill")
+        verbose_name_plural = translate("category_bills")
+        ordering = ['name']
+    
+    @property
+    def is_subcategory(self):
+        if self.parent:
+            return True
+        return False
+    
+    @property
+    def get_all_subcategories(self):
+        sub_categories = list(self.subcategories.all())
+
+        for subcat in sub_categories:
+            sub_categories.extend(subcat.get_all_subcategories)
+        
+        return sub_categories
+    
+    @property
+    def get_bills_count(self):
+        return self.bills.count()
+
+
+    
+"""---------CATEGORIES BILLS---------"""
 
 """---------DEPARTMENTS---------"""
 class Department(models.Model):
