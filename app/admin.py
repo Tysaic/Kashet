@@ -2,7 +2,8 @@ from django.contrib import admin
 from .models import (
     Budget, BudgetFile, Department, 
     Bill, BillFile, Currency, CategoryBill,
-    TypeTransaction, StatusTransaction ,ActivityLog)
+    TypeTransaction, StatusTransaction ,ActivityLog
+)
 
 
 class BudgetFileInLine(admin.TabularInline):
@@ -52,7 +53,7 @@ class TypeTransactionAdmin(admin.ModelAdmin):
 
 @admin.register(Department)
 class DepartmentsAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('name', 'description', 'phone', 'location')
 
 @admin.register(ActivityLog)
 class ActivityLogAdmin(admin.ModelAdmin):

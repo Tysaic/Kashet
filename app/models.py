@@ -4,6 +4,7 @@ from django.core.validators import MinValueValidator
 from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as translate
 from django.utils import timezone
+from django.core.exceptions import ValidationError
 import uuid
 import os
 
@@ -69,16 +70,21 @@ class Budget(models.Model):
         verbose_name = translate("budget")
         verbose_name_plural = translate("budgets")
     
-    def __str__(self):
-        return returning_title_to_bill_and_budget(
-            self.set_date, self.due_date, self.department, 
-            self.title,self.total_mount, self.currency
-        )
+
     
     @property
     def has_bills(self):
         return self.bills.exists()
-
+    
+    def __str__(self):
+        return returning_title_to_bill_and_budget(
+            self.set_date, self.due_date, self.department, 
+            self.title,self.total_mount, self.currency
+        )    
+    def delete(self, *args, **kwargs):
+        if self.has_bills:
+            raise ValidationError(translate("Presupuesto tiene deudas asignadas."))
+        super().delete(*args, **kwargs)
 
 class BudgetFile(models.Model):
     budget = models.ForeignKey(Budget, related_name="upload_folders", on_delete=models.CASCADE)
@@ -233,8 +239,15 @@ class CategoryBill(models.Model):
     @property
     def has_children(self):
         return self.subcategories.exists()
+    
 
-
+    def delete(self, *args, **kwargs):
+        if self.has_bills or self.has_children:
+            raise ValidationError(translate("Categorias tiene deudas y/o subcategorias asignadas."))
+        super().delete(*args, **kwargs)
+    
+    def __str__(self):
+        return self.name
     
 """---------CATEGORIES BILLS---------"""
 
@@ -284,6 +297,14 @@ class Department(models.Model):
     @property
     def get_bills_count(self):
         return self.bills.count()
+    
+    def delete(self, *args, **kwargs):
+        if self.has_bills or self.has_budget:
+            raise ValidationError(translate("Departamento tiene deudas y/o presupuestos asignados."))
+        super().delete(*args, **kwargs)
+    
+    def __str__(self):
+        return self.name
 """---------DEPARTMENTS---------"""
 
 """---------CURRENCY---------"""
