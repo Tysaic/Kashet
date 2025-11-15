@@ -264,7 +264,7 @@ class Department(models.Model):
     
     @property
     def balance(self):
-        return self.get_total_budgets + self.get_total_bills
+        return self.get_total_budgets - self.get_total_bills
     
     @property
     def get_budget_count(self):

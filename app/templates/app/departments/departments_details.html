@@ -1,0 +1,394 @@
+{% extends 'components/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block styles %}
+<style>
+  .stat-card {
+    transition: all 0.3s ease;
+    border-left: 4px solid transparent;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  
+  .stat-card.primary {
+    border-left-color: var(--primary);
+  }
+  
+  .stat-card.success {
+    border-left-color: var(--success);
+  }
+  
+  .stat-card.danger {
+    border-left-color: var(--danger);
+  }
+  
+  .stat-card.info {
+    border-left-color: var(--info);
+  }
+  
+  .stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+  }
+  
+  .transaction-item {
+    transition: all 0.3s ease;
+  }
+  
+  .transaction-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      font-size: 1.5rem;
+    }
+    
+    .stat-card h4 {
+      font-size: 1.2rem;
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .stat-icon {
+      width: 45px;
+      height: 45px;
+      font-size: 1.3rem;
+    }
+    
+    .stat-card h4 {
+      font-size: 1rem;
+    }
+    
+    .stat-card small {
+      font-size: 0.75rem;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <!-- Page Header -->
+  <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
+    <h1 class="page-title fw-semibold fs-18 mb-2 mb-md-0">{% trans "Detalle del Departamento" %}</h1>
+    <div class="ms-md-1 ms-0">
+      <nav>
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="{% url 'app:index' %}">{% trans "Dashboard" %}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'app:departments' %}">{% trans "Departamentos" %}</a></li>
+          <li class="breadcrumb-item active" aria-current="page">{% trans "Detalle" %}</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Department Info Card -->
+  <div class="row">
+    <div class="col-12 mb-4">
+      <div class="card custom-card">
+        <div class="card-header d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center">
+          <div class="mb-2 mb-sm-0">
+            <h5 class="card-title mb-1">{{ department.name }}</h5>
+            <small class="text-muted">
+              <i class="ri-calendar-line me-1"></i>{% trans "Creado el" %} {{ department.created_at|date:"d/m/Y H:i" }}
+            </small>
+          </div>
+          <div class="d-flex gap-2 flex-wrap">
+            <a href="{% url 'app:departments' %}" class="btn btn-sm btn-secondary">
+              <i class="ri-arrow-left-line me-1"></i><span class="d-none d-sm-inline">{% trans "Volver" %}</span>
+            </a>
+            <a href="#" class="btn btn-sm btn-primary">
+              <i class="ri-edit-line me-1"></i><span class="d-none d-sm-inline">{% trans "Editar" %}</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Additional Info -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">{% trans "Información del Departamento" %}</div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <small class="text-muted d-block mb-1">{% trans "Nombre del Departamento" %}</small>
+              <strong class="d-block">{{ department.name }}</strong>
+            </div>
+            <div class="col-md-4 mb-3">
+              <small class="text-muted d-block mb-1">{% trans "Fecha de Creación" %}</small>
+              <strong class="d-block">{{ department.created_at|date:"d/m/Y H:i" }}</strong>
+            </div>
+            <div class="col-md-4 mb-3">
+              <small class="text-muted d-block mb-1">{% trans "Última Modificación" %}</small>
+              <strong class="d-block">{{ department.updated|date:"d/m/Y H:i" }}</strong>
+            </div>
+          </div>
+          
+          <hr class="my-3">
+          
+          <div class="row">
+            <div class="col-md-3 col-6 mb-3">
+              <div class="text-center">
+                <h5 class="text-success fw-bold">{{ department.get_budget_count }}</h5>
+                <small class="text-muted">{% trans "Presupuestos" %}</small>
+              </div>
+            </div>
+            <div class="col-md-3 col-6 mb-3">
+              <div class="text-center">
+                <h5 class="text-danger fw-bold">{{ department.get_bills_count }}</h5>
+                <small class="text-muted">{% trans "Gastos" %}</small>
+              </div>
+            </div>
+            <div class="col-md-3 col-6 mb-3">
+              <div class="text-center">
+                <h5 class="text-success fw-bold amount-value">{{ department.get_total_budgets }}</h5>
+                <small class="text-muted">{% trans "Total Presupuestado" %}</small>
+              </div>
+            </div>
+            <div class="col-md-3 col-6 mb-3">
+              <div class="text-center">
+                <h5 class="text-danger fw-bold amount-value">{{ department.get_total_bills }}</h5>
+                <small class="text-muted">{% trans "Total Gastado" %}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Statistics Cards -->
+  <div class="row">
+    <!-- Total Presupuestos -->
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-3">
+      <div class="card custom-card stat-card success">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stat-icon bg-success-transparent text-success me-3">
+              <i class="ri-funds-line"></i>
+            </div>
+            <div class="flex-grow-1">
+              <small class="text-muted d-block mb-1">{% trans "Total Presupuestos" %}</small>
+              <h4 class="fw-semibold mb-0 text-success amount-value">{{ department.get_total_budgets }}</h4>
+              <small class="text-muted">
+                <i class="ri-folder-line me-1"></i>{{ department.get_budget_count }} {% trans "registros" %}
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Gastos -->
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-3">
+      <div class="card custom-card stat-card danger">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stat-icon bg-danger-transparent text-danger me-3">
+              <i class="ri-shopping-cart-line"></i>
+            </div>
+            <div class="flex-grow-1">
+              <small class="text-muted d-block mb-1">{% trans "Total Gastos" %}</small>
+              <h4 class="fw-semibold mb-0 text-danger amount-value">{{ department.get_total_bills }}</h4>
+              <small class="text-muted">
+                <i class="ri-file-list-line me-1"></i>{{ department.get_bills_count }} {% trans "registros" %}
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Balance -->
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-3">
+      <div class="card custom-card stat-card {% if department.balance >= 0 %}info{% else %}danger{% endif %}">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stat-icon bg-{% if department.balance >= 0 %}info{% else %}danger{% endif %}-transparent text-{% if department.balance >= 0 %}info{% else %}danger{% endif %} me-3">
+              <i class="ri-exchange-dollar-line"></i>
+            </div>
+            <div class="flex-grow-1">
+              <small class="text-muted d-block mb-1">{% trans "Balance" %}</small>
+              <h4 class="fw-semibold mb-0 text-{% if department.balance >= 0 %}info{% else %}danger{% endif %} amount-value">{{ department.balance }}</h4>
+              <small class="text-muted">
+                {% if department.balance >= 0 %}
+                  <i class="ri-arrow-up-line me-1 text-success"></i>{% trans "Positivo" %}
+                {% else %}
+                  <i class="ri-arrow-down-line me-1 text-danger"></i>{% trans "Negativo" %}
+                {% endif %}
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Última Actualización -->
+    <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12 mb-3">
+      <div class="card custom-card stat-card primary">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="stat-icon bg-primary-transparent text-primary me-3">
+              <i class="ri-time-line"></i>
+            </div>
+            <div class="flex-grow-1">
+              <small class="text-muted d-block mb-1">{% trans "Última Actualización" %}</small>
+              <h6 class="fw-semibold mb-0 text-primary">{{ department.updated|date:"d/m/Y" }}</h6>
+              <small class="text-muted">{{ department.updated|date:"H:i" }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Budgets and Bills -->
+  <div class="row">
+    <!-- Recent Budgets -->
+    <div class="col-xl-6 col-lg-12 mb-4">
+      <div class="card custom-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="card-title">{% trans "Presupuestos Recientes" %}</div>
+          <span class="badge bg-success-transparent">{{ department.get_budget_count }}</span>
+        </div>
+        <div class="card-body p-2 p-md-3">
+          {% if department.budgets.all %}
+            {% for budget in department.budgets.all|slice:":5" %}
+            <div class="card custom-card transaction-item mb-2">
+              <div class="card-body p-2">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="flex-grow-1 overflow-hidden">
+                    <h6 class="mb-1 fw-semibold text-truncate">{{ budget.title }}</h6>
+                    <small class="text-muted">
+                      <i class="ri-calendar-line me-1"></i>{{ budget.created_at|date:"d/m/Y" }}
+                    </small>
+                  </div>
+                  <div class="text-end ms-2">
+                    <div class="fw-bold text-success amount-value">{{ budget.total_mount }}</div>
+                    <span class="badge bg-success-transparent">{{ budget.currency }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            
+            {% if department.get_budget_count > 0 %}
+            <div class="text-center mt-3">
+              <a href="{% url 'app:list_budget' %}" class="btn btn-sm btn-outline-success">
+                <i class="ri-eye-line me-1"></i>{% trans "Ver todos los presupuestos" %}
+              </a>
+            </div>
+            {% endif %}
+          {% else %}
+            <div class="text-center py-4">
+              <i class="ri-inbox-line fs-1 text-muted"></i>
+              <p class="text-muted mt-2 mb-0">{% trans "No hay presupuestos" %}</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Bills -->
+    <div class="col-xl-6 col-lg-12 mb-4">
+      <div class="card custom-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div class="card-title">{% trans "Gastos Recientes" %}</div>
+          <span class="badge bg-danger-transparent">{{ department.get_bills_count }}</span>
+        </div>
+        <div class="card-body p-2 p-md-3">
+          {% if department.bills.all %}
+            {% for bill in department.bills.all|slice:":5" %}
+            <div class="card custom-card transaction-item mb-2">
+              <div class="card-body p-2">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div class="flex-grow-1 overflow-hidden">
+                    <h6 class="mb-1 fw-semibold text-truncate">{{ bill.title }}</h6>
+                    <small class="text-muted">
+                      <i class="ri-calendar-line me-1"></i>{{ bill.created_at|date:"d/m/Y" }}
+                    </small>
+                  </div>
+                  <div class="text-end ms-2">
+                    <div class="fw-bold text-danger amount-value">{{ bill.total_mount }}</div>
+                    <span class="badge bg-danger-transparent">{{ bill.currency }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            
+            {% if department.get_bills_count > 0 %}
+            <div class="text-center mt-3">
+              <a href="{% url 'app:list_bills' %}" class="btn btn-sm btn-outline-danger">
+                <i class="ri-eye-line me-1"></i>{% trans "Ver todos los gastos" %}
+              </a>
+            </div>
+            {% endif %}
+          {% else %}
+            <div class="text-center py-4">
+              <i class="ri-inbox-line fs-1 text-muted"></i>
+              <p class="text-muted mt-2 mb-0">{% trans "No hay gastos" %}</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  // Formatear todos los montos con separadores de miles
+  const amountElements = document.querySelectorAll('.amount-value');
+  
+  amountElements.forEach(element => {
+    let value = element.textContent.trim();
+    
+    // Si es negativo, guardar el signo
+    let isNegative = value.startsWith('-');
+    if (isNegative) {
+      value = value.substring(1);
+    }
+    
+    // Formatear número
+    let formatted = formatNumber(value);
+    
+    // Agregar signo si es negativo
+    if (isNegative) {
+      formatted = '-' + formatted;
+    }
+    
+    element.textContent = formatted;
+  });
+});
+
+function formatNumber(value){
+  // Remover puntos existentes
+  value = value.replace(/\./g, '');
+  
+  // Agregar separadores de miles
+  return value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+</script>
+{% endblock %}

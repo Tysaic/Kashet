@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse, reverse_lazy
 from .models import (
     Budget, BudgetFile, Bill, BillFile,
-    CategoryBill
+    CategoryBill, Department
 )
 from .forms import (
     BudgetForm, BudgetFileForm, BillForm, 
@@ -508,11 +508,35 @@ def bills_reports(request):
 
 # ---- DEPARTMENT ----
 
-def departments(request):
-    return render(request, 'app/departments/departments.html')
+class DepartmentListView(ListView):
+    model = Department
+    template_name = 'app/departments/departments.html'
+    context_object_name = 'departments'
+    paginate_by = 10
 
-def departments_add(request):
-    return render(request, 'app/departments/departments_add.html')
+    def get_queryset(self):
+        return Department.objects.all().order_by('name')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        context['total_budgets'] = Budget.objects.count()
+        context['total_bills'] = Bill.objects.count()
+
+        return context
+
+class DepartmentDetailsView(DetailView):
+
+    model = Department
+    template_name = 'app/departments/departments_details.html'
+    context_object_name = 'department'
+    slug_field = 'id'
+    slug_url_kwarg = 'id'
+
+
+
+#def departments_add(request):
+#    return render(request, 'app/departments/departments_add.html')
 
 def roles(request):
     return render(request, 'app/roles/roles.html')

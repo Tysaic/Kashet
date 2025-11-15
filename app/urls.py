@@ -24,11 +24,13 @@ urlpatterns = [
     path('categories_bills/add/', views.CategoryBillCreateView.as_view(), name="add_categories_bills"),
     path('categories_bills/edit/<int:id>', views.CategoryBillUpdateView.as_view(), name="update_categories_bills"),
     path('categories_bills/delete/<int:id>', views.CategoryBillDeleteView.as_view(), name='delete_categories_bills'),
-
+    
+    path('departments/', views.DepartmentListView.as_view(), name="departments"),
+    path('departments/details/<int:id>', views.DepartmentDetailsView.as_view(), name="details_department"),
+    #path('departments_add/', views.departments_add, name="departments_add"),
 
     path('bills_reports/', views.bills_reports, name="bills_reports"),
-    path('departments/', views.departments, name="departments"),
-    path('departments_add/', views.departments_add, name="departments_add"),
+
     path('roles/', views.roles, name="roles"),
     path('roles_add/', views.roles_add, name="roles_add"),
     path('roles_users/', views.roles_users, name="roles_users"),
