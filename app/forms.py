@@ -1,5 +1,5 @@
 from django import forms
-from .models import (Budget, BudgetFile, Bill, BillFile, CategoryBill)
+from .models import (Budget, BudgetFile, Bill, BillFile, CategoryBill, Department)
 from django.utils.formats import number_format
 from django.utils.translation import gettext_lazy as translate
 from .models import StatusTransaction
@@ -158,4 +158,28 @@ class CategoryBillForm(forms.ModelForm):
             'name': translate('Nombre de la categoria'),
             'description': translate('Descripcion'),
             'parent': translate('Categoria Padre (Opcional)'),
+        }
+
+class DepartmentForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Department
+        fields = [
+            'name',
+            'description',
+            'location',
+            'phone',
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': translate('Ingrese el nombre del Departamento')}),
+            'description': forms.Textarea(attrs={'rows':4, 'class': 'form-control', 'placeholder': translate('Descripcion detallada del departamento ...')}),
+            'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': translate('Ingrese su Domicilio')}),
+            'phone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': translate('Ingrese su Telefono')}),
+        }
+        labels = {
+            'name': translate('Nombre del Departamento'),
+            'description': translate('Descripción'),
+            'location': translate('Domicilio'),
+            'phone': translate('Telefono'),
         }

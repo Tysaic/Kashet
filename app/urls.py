@@ -25,9 +25,9 @@ urlpatterns = [
     path('categories_bills/edit/<int:id>', views.CategoryBillUpdateView.as_view(), name="update_categories_bills"),
     path('categories_bills/delete/<int:id>', views.CategoryBillDeleteView.as_view(), name='delete_categories_bills'),
     
-    path('departments/', views.DepartmentListView.as_view(), name="departments"),
+    path('departments/', views.DepartmentListView.as_view(), name="list_departments"),
     path('departments/details/<int:id>', views.DepartmentDetailsView.as_view(), name="details_department"),
-    #path('departments_add/', views.departments_add, name="departments_add"),
+    path('departments/add/', views.DepartmentCreateView.as_view(), name="add_departments"),
 
     path('bills_reports/', views.bills_reports, name="bills_reports"),
 

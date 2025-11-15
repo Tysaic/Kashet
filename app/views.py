@@ -6,7 +6,8 @@ from .models import (
 )
 from .forms import (
     BudgetForm, BudgetFileForm, BillForm, 
-    BillFileForm, CategoryBillForm)
+    BillFileForm, CategoryBillForm, DepartmentForm
+)
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView, DetailView
 from django.contrib import messages
 from django.utils.translation import gettext as translate
@@ -532,6 +533,12 @@ class DepartmentDetailsView(DetailView):
     context_object_name = 'department'
     slug_field = 'id'
     slug_url_kwarg = 'id'
+
+class DepartmentCreateView(CreateView):
+    model = Department
+    form_class = DepartmentForm
+    template_name = 'app/departments/departments_add.html'
+    success_url = reverse_lazy('app:list_departments')
 
 
 

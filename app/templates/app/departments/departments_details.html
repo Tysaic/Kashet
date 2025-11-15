@@ -89,7 +89,7 @@
       <nav>
         <ol class="breadcrumb mb-0">
           <li class="breadcrumb-item"><a href="{% url 'app:index' %}">{% trans "Dashboard" %}</a></li>
-          <li class="breadcrumb-item"><a href="{% url 'app:departments' %}">{% trans "Departamentos" %}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'app:list_departments' %}">{% trans "Departamentos" %}</a></li>
           <li class="breadcrumb-item active" aria-current="page">{% trans "Detalle" %}</li>
         </ol>
       </nav>
@@ -108,11 +108,14 @@
             </small>
           </div>
           <div class="d-flex gap-2 flex-wrap">
-            <a href="{% url 'app:departments' %}" class="btn btn-sm btn-secondary">
+            <a href="{% url 'app:list_departments' %}" class="btn btn-sm btn-secondary">
               <i class="ri-arrow-left-line me-1"></i><span class="d-none d-sm-inline">{% trans "Volver" %}</span>
             </a>
             <a href="#" class="btn btn-sm btn-primary">
               <i class="ri-edit-line me-1"></i><span class="d-none d-sm-inline">{% trans "Editar" %}</span>
+            </a>
+            <a href="#" class="btn btn-sm btn-danger">
+              <i class="ri-delete-bin-line me-1"></i><span class="d-none d-sm-inline">{% trans "Eliminar" %}</span>
             </a>
           </div>
         </div>
@@ -128,19 +131,47 @@
         </div>
         <div class="card-body">
           <div class="row">
-            <div class="col-md-4 mb-3">
+            <div class="col-lg-3 col-md-6 mb-3">
               <small class="text-muted d-block mb-1">{% trans "Nombre del Departamento" %}</small>
               <strong class="d-block">{{ department.name }}</strong>
             </div>
-            <div class="col-md-4 mb-3">
-              <small class="text-muted d-block mb-1">{% trans "Fecha de Creación" %}</small>
-              <strong class="d-block">{{ department.created_at|date:"d/m/Y H:i" }}</strong>
+            <div class="col-lg-3 col-md-6 mb-3">
+              <small class="text-muted d-block mb-1">{% trans "Teléfono" %}</small>
+              <strong class="d-block">
+                {% if department.phone %}
+                  <a href="tel:{{ department.phone }}" class="text-decoration-none">
+                    <i class="ri-phone-line me-1"></i>{{ department.phone }}
+                  </a>
+                {% else %}
+                  <span class="text-muted">{% trans "No especificado" %}</span>
+                {% endif %}
+              </strong>
             </div>
-            <div class="col-md-4 mb-3">
+            <div class="col-lg-3 col-md-6 mb-3">
+              <small class="text-muted d-block mb-1">{% trans "Ubicación" %}</small>
+              <strong class="d-block">
+                {% if department.location %}
+                  <i class="ri-map-pin-line me-1"></i>{{ department.location }}
+                {% else %}
+                  <span class="text-muted">{% trans "No especificado" %}</span>
+                {% endif %}
+              </strong>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-3">
               <small class="text-muted d-block mb-1">{% trans "Última Modificación" %}</small>
               <strong class="d-block">{{ department.updated|date:"d/m/Y H:i" }}</strong>
             </div>
           </div>
+          
+          {% if department.description %}
+          <hr class="my-3">
+          <div class="row">
+            <div class="col-12">
+              <small class="text-muted d-block mb-1">{% trans "Descripción" %}</small>
+              <p class="mb-0">{{ department.description }}</p>
+            </div>
+          </div>
+          {% endif %}
           
           <hr class="my-3">
           

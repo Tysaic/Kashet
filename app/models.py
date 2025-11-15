@@ -242,6 +242,9 @@ class CategoryBill(models.Model):
 class Department(models.Model):
 
     name = models.CharField(max_length=32)
+    description = models.TextField(blank=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    location = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
