@@ -270,6 +270,14 @@ class Department(models.Model):
         return self.get_total_budgets - self.get_total_bills
     
     @property
+    def has_budget(self):
+        return self.budgets.exists()
+    
+    @property
+    def has_bills(self):
+        return self.bills.exists()
+
+    @property
     def get_budget_count(self):
         return self.budgets.count()
     

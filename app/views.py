@@ -540,7 +540,39 @@ class DepartmentCreateView(CreateView):
     template_name = 'app/departments/departments_add.html'
     success_url = reverse_lazy('app:list_departments')
 
+class DepartmentUpdateView(UpdateView):
 
+    model = Department
+    form_class = DepartmentForm
+    template_name = 'app/departments/departments_update.html'
+    success_url = reverse_lazy('app:list_departments')
+    slug_field = 'id'
+    slug_url_kwarg = 'id'
+    
+
+class DepartmentDeleteView(DeleteView):
+    model = Department
+    context_object_name = 'department'
+    template_name = 'app/departments/departments_delete.html'
+    slug_field = 'id'
+    slug_url_kwarg = 'id'
+
+    def get_success_url(self):
+        _object = self.get_object()
+        logger.info(translate(f"Departamento siendo eliminara '{_object.name}'"))
+        return reverse_lazy("app:list_departments")
+    
+    def dispatch(self, request, *args, **kwargs):
+        _object = self.get_object()
+
+        if _object.has_budget or _object.has_bills:
+            logging.warning(request, f"""
+            Departamento '{_object.name}' no se puede eliminar debido a que tiene gastos asignados,
+            y/o presupuesto asignado.
+            """)
+            return redirect("app:list_departments")
+        
+        return super().dispatch(request, *args, **kwargs)
 
 #def departments_add(request):
 #    return render(request, 'app/departments/departments_add.html')

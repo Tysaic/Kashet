@@ -567,6 +567,7 @@ CURRENCY
 TYPETRANSACTION
 STATUS_TRANSACTION
 CATEGORIES
+DEPARTMENTS
 
 
 FIX Budget with news relationships
@@ -574,4 +575,6 @@ FIX Budget with news relationships
 
 * Testear si esta aprobado o denegado (bills y budget) no se puede eliminar
 * Si budget tiene bills no se puede eliminar.
+* Departamentos no se puede eliminar si tiene budget y/o bills.
+* No se puede eliminar categoria si es padre teniendo subcategorias, no se puede eliminar si tiene bills
 """

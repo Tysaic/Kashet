@@ -1,0 +1,108 @@
+{% extends 'components/base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <!-- Page Header -->
+  <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
+    <h1 class="page-title fw-semibold fs-18 mb-0">{% trans "Editar Departamento" %}</h1>
+    <div class="ms-md-1 ms-0">
+      <nav>
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a href="{% url 'app:index' %}">{% trans 'Dashboard' %}</a></li>
+          <li class="breadcrumb-item"><a href="{% url 'app:list_departments' %}">{% trans 'Departamentos' %}</a></li>
+          <li class="breadcrumb-item active">{% trans 'Editar' %}</li>
+        </ol>
+      </nav>
+    </div>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-10 col-xl-8">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">{% trans "Información del Departamento" %}</div>
+        </div>
+        <div class="card-body">
+          <form method="POST">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ form.non_field_errors }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endif %}
+
+            <div class="row g-3">
+              <!-- Nombre -->
+              <div class="col-md-6">
+                <label class="form-label">
+                  {{ form.name.label }} <span class="text-danger">*</span>
+                </label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                  <div class="text-danger small mt-1">{{ form.name.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Teléfono -->
+              <div class="col-md-6">
+                <label class="form-label">{{ form.phone.label }}</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                  <div class="text-danger small mt-1">{{ form.phone.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Ubicación -->
+              <div class="col-12">
+                <label class="form-label">{{ form.location.label }}</label>
+                {{ form.location }}
+                {% if form.location.errors %}
+                  <div class="text-danger small mt-1">{{ form.location.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <!-- Descripción -->
+              <div class="col-12">
+                <label class="form-label">{{ form.description.label }}</label>
+                {{ form.description }}
+                {% if form.description.errors %}
+                  <div class="text-danger small mt-1">{{ form.description.errors.0 }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex gap-2 mt-4">
+              <button type="submit" class="btn btn-primary">
+                <i class="ri-save-line me-1"></i>{% trans "Actualizar Departamento" %}
+              </button>
+              <a href="{% url 'app:list_departments' %}" class="btn btn-light">
+                <i class="ri-arrow-left-line me-1"></i>{% trans "Cancelar" %}
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nameInput = document.querySelector('input[name="name"]');
+    if (nameInput) {
+        nameInput.focus();
+    }
+});
+</script>
+{% endblock %}

@@ -228,7 +228,7 @@
                 <a href="{% url 'app:details_department' department.id %}" class="btn btn-light">
                   <i class="ri-eye-line me-1"></i><span class="d-none d-sm-inline">{% trans "Ver" %}</span>
                 </a>
-                <a href="#" class="btn btn-light">
+                <a href="{% url 'app:update_departments' department.id %}" class="btn btn-light">
                   <i class="ri-edit-line me-1"></i><span class="d-none d-sm-inline">{% trans "Editar" %}</span>
                 </a>
               </div>
