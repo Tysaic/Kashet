@@ -74,6 +74,10 @@ class Budget(models.Model):
             self.set_date, self.due_date, self.department, 
             self.title,self.total_mount, self.currency
         )
+    
+    @property
+    def has_bills(self):
+        return self.bills.exists()
 
 
 class BudgetFile(models.Model):
@@ -221,6 +225,14 @@ class CategoryBill(models.Model):
     @property
     def get_bills_count(self):
         return self.bills.count()
+    
+    @property
+    def has_bills(self):
+        return self.bills.exists()
+    
+    @property
+    def has_children(self):
+        return self.subcategories.exists()
 
 
     

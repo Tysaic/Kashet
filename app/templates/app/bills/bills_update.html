@@ -29,28 +29,28 @@
             {% endif %}
             <div class="row g-3">
               <!-- Título y Departamento -->
-              <div class="col-md-3">
+              <div class="col-xs-12 col-md-3 col-lg-3 col-xl-3">
                 <label class="form-label">{{ form.title.label }}</label>
                 {{ form.title }}
                 {% if form.title.errors %}
                   <div class="text-danger small">{{ form.title.errors }}</div>
                 {% endif %}
               </div>
-              <div class="col-md-3">
+              <div class="col-xs-12 col-md-3 col-lg-3 col-xl-3">
                 <label class="form-label">{{ form.department.label }}</label>
                 {{form.department}}
                 {% if form.department.errors %}
                   <div class="text-danger small">{{ form.department.errors }}</div>
                 {% endif %}
               </div>
-              <div class="col-md-3">
+              <div class="col-xs-12 col-md-3 col-lg-3 col-xl-3">
                 <label class="form-label">{{ form.type.label }}</label>
                 {{form.type}}
                 {% if form.type.errors %}
                   <div class="text-danger small">{{ form.type.errors }}</div>
                 {% endif %}
               </div>
-              <div class="col-md-3">
+              <div class="col-xs-12 col-md-3 col-lg-3 col-xl-3">
                 <label class="form-label">{{ form.status.label }}</label>
                 {{form.status}}
                 {% if form.status.errors %}
@@ -58,7 +58,7 @@
                 {% endif %}
               </div>
               <!-- Período -->
-              <div class="col-xs-12 col-md-5 col-lg-5 col-xl-4">
+              <div class="col-xs-12 col-md-3 col-lg-3 col-xl-3">
                 <label class="form-label">{{ form.due_date.label }}</label>
                 {{ form.due_date }}
                 {% if form.due_date.errors %}
@@ -67,7 +67,7 @@
               </div>
 
               <!-- Montos -->
-              <div class="col-xs-12 col-md-5 col-lg-5 col-xl-4">
+              <div class="col-xs-12 col-md-3 col-lg-3 col-xl-3">
                 <label class="form-label">{{ form.total_mount.label }}</label>
                 <div class="input-group">
                   <span class="input-group-text">$</span>
@@ -77,11 +77,18 @@
                   {% endif %}
                 </div>
               </div>
-              <div class="col-xs-12 col-md-2 col-lg-2 col-xl-4">
+              <div class="col-xs-12 col-md-3 col-lg-3 col-xl-3">
                 <label class="form-label">{{ form.currency.label }}</label>
                 {{form.currency}}
                 {% if form.currency.errors %}
                     <div class="text-danger small">{{ form.currency.errors}}</div>
+                {% endif %}
+              </div>
+              <div class="col-xs-12 col-md-3 col-lg-3 col-xl-3">
+                <label class="form-label">{{ form.category.label }}</label>
+                {{form.category}}
+                {% if form.category.errors %}
+                    <div class="text-danger small">{{ form.category.errors}}</div>
                 {% endif %}
               </div>
 

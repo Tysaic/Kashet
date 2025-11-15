@@ -26,8 +26,8 @@ class BudgetForm(forms.ModelForm):
             'due_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'value': date.today().strftime('%Y-%m-%d')}, format='%Y-%m-%d'),
             'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-control', 'placeholder': translate('Descripcion detallada del presupuesto ...')}),
             'total_mount': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_total_mount','placeholder': '0.00'}),
-            'currency': forms.Select(attrs={'class': 'form-select'}),
-            'type': forms.Select(attrs={'class': 'form-select'}),
+            'currency': forms.Select(attrs={'class': 'form-select', 'placeholder': translate('Ingrese la moneda.')}),
+            'type': forms.Select(attrs={'class': 'form-select', 'placeholder': translate('Ingrese tipo de gasto.')}),
             'status': forms.Select(attrs={'class': 'form-select', 'placeholder': translate('Estado del presupuesto')}),
             'department': forms.Select(attrs={'class': 'form-select', 'placeholder': translate('Ingrese aca el departamento')}),
         }
@@ -87,7 +87,8 @@ class BillForm(forms.ModelForm):
             'budget',
             'type',
             'status',
-            'department'
+            'department',
+            'category',
         ]
 
         widgets = {
@@ -95,11 +96,12 @@ class BillForm(forms.ModelForm):
             'due_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'value': date.today().strftime('%Y-%m-%d')}, format='%Y-%m-%d'),
             'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-control', 'placeholder': translate('Descripcion detallada del presupuesto ...')}),
             'total_mount': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_total_mount','placeholder': '0.00'}),
-            'currency': forms.Select(attrs={'class': 'form-select'}),
-            'type': forms.Select(attrs={'class': 'form-select'}),
+            'currency': forms.Select(attrs={'class': 'form-select', 'placeholder': translate('Ingrese la moneda.')}),
+            'type': forms.Select(attrs={'class': 'form-select', 'placeholder': translate('Ingrese tipo de gasto.')}),
             'status': forms.Select(attrs={'class': 'form-select', 'placeholder': translate('Estado del presupuesto')}),
             'department': forms.Select(attrs={'class': 'form-select', 'placeholder': translate('Ingrese aca el departamento')}),
-            'budget': forms.Select(attrs={'class': 'form-select', 'placeholder': translate('Ingrese aca el presupuesto')})
+            'budget': forms.Select(attrs={'class': 'form-select', 'placeholder': translate('Ingrese aca el presupuesto')}),
+            'category': forms.Select(attrs={'class': 'form-select', 'placeholder': translate('Ingrese la categoria de gasto.')})
         }
         labels = {
             'title': translate('Titulo del Presupuesto'),
@@ -110,7 +112,8 @@ class BillForm(forms.ModelForm):
             'total_mount': translate('Monto Total'),
             'currency': translate('Moneda'),
             'due_date': translate('Fecha de tope de gasto'),
-            'budget': translate('Presupuesto')
+            'budget': translate('Presupuesto'),
+            'category': translate('Categoria'),
         }
 
 

@@ -136,17 +136,13 @@
           <!-- Dates -->
           <div class="row mb-4">
             <div class="col-lg-4 col-sm-6 col-12 mb-3 mb-lg-0">
+              <small class="text-muted d-block">Fecha de Inicio</small>
+              <strong class="d-block" style="color: #d63384;">{{ budget.set_date|date:"d/m/Y H:i"|default:"Sin fecha" }}</strong>
+            </div>
+            <div class="col-lg-4 col-sm-6 col-12 mb-3 mb-lg-0">
               <small class="text-muted d-block">Fecha de Vencimiento</small>
               <strong class="d-block" style="color: #d63384;">{{ budget.due_date|date:"d/m/Y H:i"|default:"Sin fecha" }}</strong>
             </div>
-            <!-- <div class="col-lg-4 col-sm-6 col-12 mb-3 mb-lg-0">
-              <small class="text-muted d-block">Fecha de Creación</small>
-              <strong class="d-block">{{ budget.created_at|date:"d/m/Y H:i" }}</strong>
-            </div>
-            <div class="col-lg-4 col-sm-12 col-12">
-              <small class="text-muted d-block">Última Actualización</small>
-              <strong class="d-block">{{ budget.updated|date:"d/m/Y H:i" }}</strong>
-            </div> -->
           </div>
         </div>
       </div>

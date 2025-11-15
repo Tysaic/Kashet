@@ -471,6 +471,37 @@ class CategoryBillCreateView(CreateView):
     template_name = 'app/bills/categories/bills_categories_add.html'
     success_url = reverse_lazy('app:categories_bills')
 
+class CategoryBillUpdateView(UpdateView):
+    model = CategoryBill
+    form_class = CategoryBillForm
+    template_name = 'app/bills/categories/bills_categories_update.html'
+    success_url = reverse_lazy('app:categories_bills')
+    slug_field = 'id'
+    slug_url_kwarg = 'id'
+
+class CategoryBillDeleteView(DeleteView):
+    model = CategoryBill
+    context_object_name = 'category'
+    template_name = 'app/bills/categories/bills_categories_delete.html'
+    slug_field = 'id'
+    slug_url_kwarg = 'id'
+
+    def get_success_url(self):
+        _object = self.get_object()
+        logger.info(translate(f"Categoria siendo eliminara '{_object.name}'"))
+        return reverse_lazy("app:categories_bills")
+    
+    def dispatch(self, request, *args, **kwargs):
+        _object = self.get_object()
+
+        if _object.has_bills or _object.has_children:
+            logging.warning(request, f"""
+            La Categoria '{_object.name}' no se puede eliminar debido a que tiene gastos asignados,
+            o es padre de subcategorias.
+            """)
+            return redirect("app:categories_bills")
+        
+        return super().dispatch(request, *args, **kwargs)
 
 def bills_reports(request):
     return render(request, 'app/bills/bills_reports.html')
