@@ -237,6 +237,12 @@ class BudgetDeleteView(DeleteView):
             )
 
             return redirect('app:list_budget')
+        elif self.object.bills.exists():
+
+            logger.warning(request, f"""El presupuesto "{self.object.title} - {self.object.identifier}" 
+                tiene gastos asociados y no se puede eliminar, alguien intenta entrar a el
+                con el usuario {request.user}""")
+            return redirect('app:list_budget')
     
         return super().dispatch(request, *args, **kwargs)
 

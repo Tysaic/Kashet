@@ -87,9 +87,11 @@
             <a href="{% url 'app:update_budget' budget.identifier %}" class="btn btn-sm btn-primary">
               <i class="ri-edit-line me-1"></i><span class="d-none d-sm-inline">{% trans "Editar" %}</span>
             </a>
-            <a href="{% url 'app:delete_budget' budget.identifier %}" class="btn btn-sm btn-danger">
-              <i class="ri-delete-bin-line me-1"></i><span class="d-none d-sm-inline">{% trans "Eliminar" %}</span>
-            </a>
+              {% if not object.bills.all %}
+                <a href="{% url 'app:delete_budget' budget.identifier %}" class="btn btn-sm btn-danger">
+                  <i class="ri-delete-bin-line me-1"></i><span class="d-none d-sm-inline">{% trans "Eliminar" %}</span>
+                </a>
+              {% endif %}
             {% endif %}
           </div>
         </div>

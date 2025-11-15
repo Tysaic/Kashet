@@ -576,4 +576,7 @@ STATUS_TRANSACTION
 
 FIX Budget with news relationships
 
+
+* Testear si esta aprobado o denegado (bills y budget) no se puede eliminar
+* Si budget tiene bills no se puede eliminar.
 """
