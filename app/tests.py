@@ -556,22 +556,17 @@ class BudgetDeleteView(TestCase):
 
 
 """
-New testing with new fields of Budget:
+New testing with new fields of Budget and bills:
 
 * edit
 
-Testing Models:
+Testing Models and views:
 
 BILLS
 CURRENCY
 TYPETRANSACTION
 STATUS_TRANSACTION
-
-Views for the above models
-BILLS
-CURRENCY
-TYPETRANSACTION
-STATUS_TRANSACTION
+CATEGORIES
 
 
 FIX Budget with news relationships

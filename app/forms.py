@@ -18,9 +18,11 @@ class BudgetForm(forms.ModelForm):
             'total_mount',
             'currency',
             'due_date',
+            'set_date',
         ]
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': translate('Ingrese aca el presupuesto')}),
+            'set_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'value': date.today().strftime('%Y-%m-%d')}, format='%Y-%m-%d'),
             'due_date': forms.DateInput(attrs={'type': 'date', 'class': 'form-control', 'value': date.today().strftime('%Y-%m-%d')}, format='%Y-%m-%d'),
             'description': forms.Textarea(attrs={'rows': 4, 'class': 'form-control', 'placeholder': translate('Descripcion detallada del presupuesto ...')}),
             'total_mount': forms.TextInput(attrs={'class': 'form-control', 'id': 'id_total_mount','placeholder': '0.00'}),
@@ -37,7 +39,8 @@ class BudgetForm(forms.ModelForm):
             'department': translate('Departamento'),
             'total_mount': translate('Monto Total'),
             'currency': translate('Moneda'),
-            'due_date': translate('Fecha de tope de gasto'),
+            'due_date': translate('Fecha de tope de Presupuesto'),
+            'set_date': translate('Fecha de inicio de Presupuesto'),
         }
 
     def __init__(self, *args, **kwargs):

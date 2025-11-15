@@ -10,15 +10,16 @@ import os
 
 """---------BUDGET---------"""
 
-def returning_title_to_bill_and_budget(due_date, department, title, total_mount, currency):
+def returning_title_to_bill_and_budget(set_date, due_date, department, title, total_mount, currency):
     MONTHS = [
         translate('Enero'), translate('Febrero'), translate('Marzo'),
         translate('Abril'), translate('Mayo'), translate('Junio'),
         translate('Julio'), translate('Agosto'), translate('septiembre'),
         translate('Octubre'), translate('Noviembre'), translate('Diciembre'),
     ]
-    month_date = MONTHS[ due_date.month -1 ]
-    title_to_str = f"{month_date} - {department} - {title} - ({total_mount} {currency})"
+    month_due_date = MONTHS[ due_date.month -1 ]
+    month_set_date = MONTHS[ set_date.month -1 ]
+    title_to_str = f"{month_set_date}/{month_due_date} - {department} - {title} - ({total_mount} {currency})"
     return  title_to_str
 
 def budget_upload_path(instance, filename):
@@ -29,6 +30,7 @@ class Budget(models.Model):
     description = models.TextField(blank=True)
     total_mount = models.DecimalField(max_digits=24, decimal_places=0, validators=[MinValueValidator(0.01, message="Monto debe ser positivo.")])
     identifier = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    set_date = models.DateTimeField(null=True, blank=True, default=timezone.now)
     due_date = models.DateTimeField(null=True, blank=True, default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -69,8 +71,8 @@ class Budget(models.Model):
     
     def __str__(self):
         return returning_title_to_bill_and_budget(
-            self.due_date, self.department, self.title, 
-            self.total_mount, self.currency
+            self.set_date, self.due_date, self.department, 
+            self.title,self.total_mount, self.currency
         )
 
 
@@ -158,9 +160,10 @@ class Bill(models.Model):
     
     def __str__(self):
         return returning_title_to_bill_and_budget(
-            self.due_date, self.department, self.title, 
-            self.total_mount, self.currency
+            self.set_date, self.due_date, self.department, 
+            self.title,self.total_mount, self.currency
         )
+
     
 class BillFile(models.Model):
     bill = models.ForeignKey(Bill, related_name="upload_folders", on_delete=models.CASCADE)
