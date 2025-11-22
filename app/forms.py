@@ -1,5 +1,6 @@
 from django import forms
-from .models import (Budget, BudgetFile, Bill, BillFile, CategoryBill, Department)
+from .models import (Budget, BudgetFile, Bill, BillFile, CategoryBill, Department, CustomUser)
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.utils.formats import number_format
 from django.utils.translation import gettext_lazy as translate
 from .models import StatusTransaction
@@ -183,3 +184,18 @@ class DepartmentForm(forms.ModelForm):
             'location': translate('Domicilio'),
             'phone': translate('Telefono'),
         }
+
+class CustomLoginForm(AuthenticationForm):
+    username = forms.EmailField(
+        widget = forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Email',
+            'autofocus': True
+        })
+    )
+    password = forms.CharField(
+        widget = forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': translate('Contraseña'),
+        })
+    )

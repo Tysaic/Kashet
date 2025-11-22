@@ -2,9 +2,10 @@ from django.contrib import admin
 from .models import (
     Budget, BudgetFile, Department, 
     Bill, BillFile, Currency, CategoryBill,
-    TypeTransaction, StatusTransaction ,ActivityLog
+    TypeTransaction, StatusTransaction ,ActivityLog,
+    CustomUser
 )
-
+from django.contrib.auth.admin import UserAdmin
 
 class BudgetFileInLine(admin.TabularInline):
     model = BudgetFile
@@ -65,3 +66,7 @@ class ActivityLogAdmin(admin.ModelAdmin):
 @admin.register(CategoryBill)
 class CategoryBillAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
+
+@admin.register(CustomUser)
+class CustomUserAdmin(admin.ModelAdmin):
+    list_display = ('email', 'username', 'is_active', 'is_staff')
