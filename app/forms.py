@@ -45,8 +45,12 @@ class BudgetForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         
+        if user and not user.is_superuser:
+            self.fields['department'].queryset = user.departments.all()
+
         self.fields['due_date'].input_formats = ['%Y-%m-%d'] 
         # Just new forms on budget_add
         if not self.instance.pk:
@@ -119,8 +123,16 @@ class BillForm(forms.ModelForm):
 
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         
+        if user and not user.is_superuser:
+            self.fields['department'].queryset = user.departments.all()
+
+            self.fields['budget'].queryset = Budget.objects.filter(
+                department__in=user.departments.all()
+            )
+
         self.fields['due_date'].input_formats = ['%Y-%m-%d'] 
         # Just new forms on budget_add
         if not self.instance.pk:
@@ -185,6 +197,12 @@ class DepartmentForm(forms.ModelForm):
             'phone': translate('Telefono'),
         }
 
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+        
+        if user and not user.is_superuser:
+            self.fields['department'].queryset = user.departments.all()
 
 # ------ Login Site ------
 class CustomLoginForm(AuthenticationForm):

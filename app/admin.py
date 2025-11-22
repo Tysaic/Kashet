@@ -5,12 +5,8 @@ from .models import (
     TypeTransaction, StatusTransaction ,ActivityLog,
     CustomUser
 )
-<<<<<<< HEAD
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-=======
-from django.contrib.auth.admin import UserAdmin
->>>>>>> 5e240813578a946e091ea2cf7a49e6d7bed41871
 
 class BudgetFileInLine(admin.TabularInline):
     model = BudgetFile

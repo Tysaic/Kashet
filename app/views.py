@@ -72,7 +72,15 @@ class BudgetListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Budget.objects.all().order_by('-created_at')
+        query_set = super().get_queryset().select_related("department")
+        user = self.request.user
+
+
+        if user.is_superuser:
+            return query_set
+        
+        #return Budget.objects.all().order_by('-created_at')
+        return query_set.filter(department__in = user.departments.all())
 
 class BudgetCreateView(LoginRequiredMixin, CreateView):
     model = Budget
@@ -80,6 +88,11 @@ class BudgetCreateView(LoginRequiredMixin, CreateView):
     template_name = 'app/budgets/budget_add.html'
     # Cambiar a la lista de budgets
     success_url = reverse_lazy('app:list_budget')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -148,6 +161,11 @@ class BudgetUpdateView(LoginRequiredMixin, UpdateView):
     slug_field = "identifier"
     slug_url_kwarg = "identifier"
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+    
     def dispatch(self, request, *args, **kwargs):
 
         # Block if is False to edit
@@ -197,7 +215,7 @@ class BudgetUpdateView(LoginRequiredMixin, UpdateView):
             BudgetFile.objects.create(budget=self.object, file=new_file)
         
         # Validing the form when editing
-        form = self.form_class(request.POST, instance=self.object)
+        form = self.form_class(request.POST, instance=self.object, user=request.user)
         if form.is_valid():
             self.object = form.save(commit=False)
             
@@ -289,7 +307,16 @@ class BillListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Bill.objects.all().order_by('-created_at')
+        query_set = super().get_queryset().select_related("department")
+        user = self.request.user
+
+
+        if user.is_superuser:
+            return query_set
+        
+        #return Bill.objects.all().order_by('-created_at')
+        return query_set.filter(department__in = user.departments.all())
+        
 
 class BillCreateView(LoginRequiredMixin, CreateView):
 
@@ -298,7 +325,11 @@ class BillCreateView(LoginRequiredMixin, CreateView):
     template_name = 'app/bills/bills_add.html'
     success_url = reverse_lazy('app:list_bills')
 
-
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.POST:
@@ -363,6 +394,11 @@ class BillUpdateView(LoginRequiredMixin, UpdateView):
     slug_field = "identifier"
     slug_url_kwarg = "identifier"
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
     def dispatch(self, request, *args, **kwargs):
 
         # Block if is False to edit
@@ -412,7 +448,7 @@ class BillUpdateView(LoginRequiredMixin, UpdateView):
             BillFile.objects.create(budget=self.object, file=new_file)
         
         # Validing the form when editing
-        form = self.form_class(request.POST, instance=self.object)
+        form = self.form_class(request.POST, instance=self.object, user=request.user)
         if form.is_valid():
             self.object = form.save(commit=False)
             
@@ -550,7 +586,14 @@ class DepartmentListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Department.objects.all().order_by('name')
+        query_set = super().get_queryset()
+        user = self.request.user
+
+        if user.is_superuser:
+            return query_set
+        
+        #return Budget.objects.all().order_by('-created_at')
+        return user.departments.all()
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

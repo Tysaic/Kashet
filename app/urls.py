@@ -5,7 +5,7 @@ app_name = 'app'
 
 urlpatterns = [
     # ---- INDEX ----
-    path('', views.index, name='index'),
+    path('', views.resume_budget, name='index'),
     path('resume_budgets/', views.resume_budget, name='resume_budgets'),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
