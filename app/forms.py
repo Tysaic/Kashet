@@ -1,5 +1,6 @@
 from django import forms
-from .models import (Budget, BudgetFile, Bill, BillFile, CategoryBill, Department)
+from .models import (Budget, BudgetFile, Bill, BillFile, CategoryBill, Department, CustomUser)
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, ReadOnlyPasswordHashField
 from django.utils.formats import number_format
 from django.utils.translation import gettext_lazy as translate
 from .models import StatusTransaction
@@ -183,3 +184,82 @@ class DepartmentForm(forms.ModelForm):
             'location': translate('Domicilio'),
             'phone': translate('Telefono'),
         }
+
+
+# ------ Login Site ------
+class CustomLoginForm(AuthenticationForm):
+    username = forms.EmailField(
+        widget = forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Email',
+            'autofocus': True
+        })
+    )
+    password = forms.CharField(
+        widget = forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': translate('Contraseña'),
+        })
+    )
+
+class CustomUserCreationForm(forms.ModelForm):
+    
+    first_password = forms.CharField(
+        label = 'password',
+        widget = forms.PasswordInput()
+    )
+    second_password = forms.CharField(
+        label = 'Confirm password',
+        widget = forms.PasswordInput()
+    )
+
+    class Meta:
+
+        model = CustomUser
+        fields = ('email', 'username', 'first_name', 'last_name', 'is_active', 'is_staff', 'phone', 'departments')
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        first_password = cleaned_data.get("first_password")
+        second_password = cleaned_data.get("second_password")
+
+        if first_password and second_password and first_password != second_password:
+            raise forms.ValidationError("The password doesn't match!")
+        return cleaned_data
+    
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data["first_password"])
+
+        if commit:
+            user.save()
+            self.save_m2m()
+        return user
+    
+
+class CustomUserChangeForm(forms.ModelForm):
+
+    password = ReadOnlyPasswordHashField(
+        label='password',
+        help_text = (
+            "The passwords is stored hashed"
+            "Could change the password using specific forms."
+        )
+    )
+
+    class Meta:
+        model = CustomUser
+        fields = (
+            "email",
+            "username",
+            "first_name",
+            "last_name",
+            "phone",
+            "departments",
+            "password",
+            "is_active",
+            "is_staff",
+            "is_superuser",
+            "groups",
+            "user_permissions",
+        )

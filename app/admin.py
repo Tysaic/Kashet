@@ -2,9 +2,11 @@ from django.contrib import admin
 from .models import (
     Budget, BudgetFile, Department, 
     Bill, BillFile, Currency, CategoryBill,
-    TypeTransaction, StatusTransaction ,ActivityLog
+    TypeTransaction, StatusTransaction ,ActivityLog,
+    CustomUser
 )
-
+from .forms import CustomUserCreationForm, CustomUserChangeForm
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 class BudgetFileInLine(admin.TabularInline):
     model = BudgetFile
@@ -54,6 +56,7 @@ class TypeTransactionAdmin(admin.ModelAdmin):
 @admin.register(Department)
 class DepartmentsAdmin(admin.ModelAdmin):
     list_display = ('name', 'description', 'phone', 'location')
+    search_fields = ('name', 'phone', 'location')
 
 @admin.register(ActivityLog)
 class ActivityLogAdmin(admin.ModelAdmin):
@@ -65,3 +68,48 @@ class ActivityLogAdmin(admin.ModelAdmin):
 @admin.register(CategoryBill)
 class CategoryBillAdmin(admin.ModelAdmin):
     list_display = ('name', 'description')
+
+@admin.register(CustomUser)
+class CustomUserAdmin(BaseUserAdmin):
+    form = CustomUserChangeForm # To Edit
+    add_form = CustomUserCreationForm
+
+    list_display = ("email", "username", "is_staff", "is_active",)
+    list_filter = ("is_staff", "is_superuser", "is_active", "departments")
+    search_fields = ("email", "username", "first_name", "last_name")
+    #ordering = ("-date_joined",)
+
+    filter_horizontal = ("departments", "groups", "user_permissions")
+
+    # Fieldsets para editar usuarios existentes
+    fieldsets = (
+        (None, {"fields": ("email", "password")}),
+        ("Personal Info", {
+            "fields": ("username", "first_name", "last_name", "phone", "departments")
+        }),
+        ("Permissions", {
+            "fields": ("is_active", "is_staff", "is_superuser", "groups", "user_permissions")
+        }),
+        ("Important Dates", {
+            "fields": ("last_login",)
+        }),
+    )
+
+    # Fieldsets para crear nuevos usuarios
+    add_fieldsets = (
+        (None, {
+            "classes": ("wide",),
+            "fields": (
+                "email",
+                "username",
+                "first_name",
+                "last_name",
+                "phone",
+                "departments",
+                "first_password",
+                "second_password",
+                "is_staff",
+                "is_active"
+            )
+        }),
+    )

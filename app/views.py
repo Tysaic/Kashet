@@ -1,4 +1,6 @@
 from django.shortcuts import render, redirect
+from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
 from django.urls import reverse, reverse_lazy
 from .models import (
     Budget, BudgetFile, Bill, BillFile,
@@ -6,18 +8,20 @@ from .models import (
 )
 from .forms import (
     BudgetForm, BudgetFileForm, BillForm, 
-    BillFileForm, CategoryBillForm, DepartmentForm
+    BillFileForm, CategoryBillForm, DepartmentForm,
+    CustomLoginForm
 )
 from django.views.generic import CreateView, UpdateView, DeleteView, ListView, DetailView
 from django.contrib import messages
 from django.utils.translation import gettext as translate
 from django.utils.translation import gettext_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
 import logging
 
 logger = logging.getLogger("app")
 
 # -- INDEX --
-
+@login_required
 def index (request):
     logger.info(f"User {request.user} init in index", extra={
         "user": request.user,
@@ -25,13 +29,43 @@ def index (request):
         "method": request.method,
     })
     return render(request, 'index.html')
-
+@login_required
 def resume_budget(request):
     return render(request, 'app/budgets/budget.html')
 
+# -- LOGIN & LOGOUT --
+def login_view(request):
+
+    if request.user.is_authenticated:
+        return redirect('app:index')
+
+    if request.method == 'POST':
+        form = CustomLoginForm(request, data=request.POST)
+        if form.is_valid():
+            email_username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(request, username=email_username, password=password)
+
+            if user is not None:
+                login(request, user)
+                logger.info(f"User {email_username} is loggin.")
+                return redirect('app:index')
+    else:
+        form = CustomLoginForm()
+    
+    return render(request, 'auth/login.html', { 'form' : form })
+
+@login_required
+def logout_view(request):
+    logger.info(f"User {request.user} is logout")
+    logout(request)
+    return redirect('app:login')
+    
+
+
 # ---- BUDGET ----
 
-class BudgetListView(ListView):
+class BudgetListView(LoginRequiredMixin, ListView):
     model = Budget
     template_name = 'app/budgets/budget_list.html'
     context_object_name = 'budgets'
@@ -40,7 +74,7 @@ class BudgetListView(ListView):
     def get_queryset(self):
         return Budget.objects.all().order_by('-created_at')
 
-class BudgetCreateView(CreateView):
+class BudgetCreateView(LoginRequiredMixin, CreateView):
     model = Budget
     form_class = BudgetForm
     template_name = 'app/budgets/budget_add.html'
@@ -95,7 +129,7 @@ class BudgetCreateView(CreateView):
         )
         return super().form_invalid(form)
 
-class BudgetDetailView(DetailView):
+class BudgetDetailView(LoginRequiredMixin, DetailView):
     model = Budget
     template_name = "app/budgets/budget_detail.html"
     context_object_name = "budget"
@@ -107,7 +141,7 @@ class BudgetDetailView(DetailView):
         context['files'] = self.object.upload_folders.all()
         return context
 
-class BudgetUpdateView(UpdateView):
+class BudgetUpdateView(LoginRequiredMixin, UpdateView):
     model = Budget
     form_class = BudgetForm
     template_name = "app/budgets/budget_update.html"
@@ -214,7 +248,7 @@ def deleting_file_budget(request, file_id):
         )
         return redirect("app:update_budget", identifier = budget.identifier)
 
-class BudgetDeleteView(DeleteView):
+class BudgetDeleteView(LoginRequiredMixin, DeleteView):
 
     model = Budget
     template_name = "app/budgets/budget_delete.html"
@@ -248,8 +282,7 @@ class BudgetDeleteView(DeleteView):
         return super().dispatch(request, *args, **kwargs)
 
 # ---- BILL ----
-
-class BillListView(ListView):
+class BillListView(LoginRequiredMixin, ListView):
     model = Bill
     template_name = 'app/bills/bills_list.html'
     context_object_name = 'bills'
@@ -257,8 +290,8 @@ class BillListView(ListView):
 
     def get_queryset(self):
         return Bill.objects.all().order_by('-created_at')
-    
-class BillCreateView(CreateView):
+
+class BillCreateView(LoginRequiredMixin, CreateView):
 
     model = Bill
     form_class = BillForm
@@ -311,7 +344,7 @@ class BillCreateView(CreateView):
         )
         return super().form_invalid(form)
 
-class BillDetailView(DetailView):
+class BillDetailView(LoginRequiredMixin, DetailView):
     model = Bill
     template_name = "app/bills/bills_detail.html"
     context_object_name = "bill"
@@ -323,7 +356,7 @@ class BillDetailView(DetailView):
         context['files'] = self.object.upload_folders.all()
         return context
 
-class BillUpdateView(UpdateView):
+class BillUpdateView(LoginRequiredMixin, UpdateView):
     model = Bill
     form_class = BillForm
     template_name = "app/bills/bills_update.html"
@@ -430,7 +463,7 @@ def deleting_file_bill(request, file_id):
         )
         return redirect("app:update_bill", identifier = bill.identifier)
 
-class BillDeleteView(DeleteView):
+class BillDeleteView(LoginRequiredMixin, DeleteView):
 
     model = Bill
     template_name = "app/bills/bills_delete.html"
@@ -457,7 +490,7 @@ class BillDeleteView(DeleteView):
     
         return super().dispatch(request, *args, **kwargs)
 # ---- BILL CATEGORIES ----
-class CategoryBillsList(ListView):
+class CategoryBillsList(LoginRequiredMixin, ListView):
     template_name = 'app/bills/categories/bills_categories.html'
     model = CategoryBill
     context_object_name = 'categories'
@@ -466,13 +499,13 @@ class CategoryBillsList(ListView):
     def get_queryset(self):
         return CategoryBill.objects.all().order_by('name')
 
-class CategoryBillCreateView(CreateView):
+class CategoryBillCreateView(LoginRequiredMixin, CreateView):
     model = CategoryBill
     form_class = CategoryBillForm
     template_name = 'app/bills/categories/bills_categories_add.html'
     success_url = reverse_lazy('app:categories_bills')
 
-class CategoryBillUpdateView(UpdateView):
+class CategoryBillUpdateView(LoginRequiredMixin, UpdateView):
     model = CategoryBill
     form_class = CategoryBillForm
     template_name = 'app/bills/categories/bills_categories_update.html'
@@ -480,7 +513,7 @@ class CategoryBillUpdateView(UpdateView):
     slug_field = 'id'
     slug_url_kwarg = 'id'
 
-class CategoryBillDeleteView(DeleteView):
+class CategoryBillDeleteView(LoginRequiredMixin, DeleteView):
     model = CategoryBill
     context_object_name = 'category'
     template_name = 'app/bills/categories/bills_categories_delete.html'
@@ -504,12 +537,13 @@ class CategoryBillDeleteView(DeleteView):
         
         return super().dispatch(request, *args, **kwargs)
 
+@login_required
 def bills_reports(request):
     return render(request, 'app/bills/bills_reports.html')
 
 # ---- DEPARTMENT ----
 
-class DepartmentListView(ListView):
+class DepartmentListView(LoginRequiredMixin, ListView):
     model = Department
     template_name = 'app/departments/departments.html'
     context_object_name = 'departments'
@@ -526,7 +560,7 @@ class DepartmentListView(ListView):
 
         return context
 
-class DepartmentDetailsView(DetailView):
+class DepartmentDetailsView(LoginRequiredMixin, DetailView):
 
     model = Department
     template_name = 'app/departments/departments_details.html'
@@ -534,13 +568,13 @@ class DepartmentDetailsView(DetailView):
     slug_field = 'id'
     slug_url_kwarg = 'id'
 
-class DepartmentCreateView(CreateView):
+class DepartmentCreateView(LoginRequiredMixin, CreateView):
     model = Department
     form_class = DepartmentForm
     template_name = 'app/departments/departments_add.html'
     success_url = reverse_lazy('app:list_departments')
 
-class DepartmentUpdateView(UpdateView):
+class DepartmentUpdateView(LoginRequiredMixin, UpdateView):
 
     model = Department
     form_class = DepartmentForm
@@ -549,8 +583,7 @@ class DepartmentUpdateView(UpdateView):
     slug_field = 'id'
     slug_url_kwarg = 'id'
     
-
-class DepartmentDeleteView(DeleteView):
+class DepartmentDeleteView(LoginRequiredMixin, DeleteView):
     model = Department
     context_object_name = 'department'
     template_name = 'app/departments/departments_delete.html'
@@ -577,14 +610,18 @@ class DepartmentDeleteView(DeleteView):
 #def departments_add(request):
 #    return render(request, 'app/departments/departments_add.html')
 
+@login_required
 def roles(request):
     return render(request, 'app/roles/roles.html')
 
+@login_required
 def roles_add(request):
     return render(request, 'app/roles/roles_add.html')
 
+@login_required
 def roles_users(request):
     return render(request, 'app/roles/roles_users.html')
 
+@login_required
 def roles_users_add(request):
     return render(request, 'app/roles/roles_users_add.html')

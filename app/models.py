@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.utils.translation import gettext_lazy as translate
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 import uuid
 import os
 
@@ -377,4 +378,65 @@ class ActivityLog(models.Model):
         return f'[{self.timestamp: %Y-%m-%d %H:%M}] {"System"} - self.action'
 
 """---------ACTIVITY_LOG---------"""
+
+"""---------USER & SESSIONS---------"""
+class UserManager(BaseUserManager):
+
+    def create_user(self,email, password=None, **extra_fields):
+        """Create and save regular user"""
+        if not email:
+            raise ValueError(translate("Email Obligatorio!"))
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+    
+    def create_superuser(self, email, password=None, **extra_fields):
+        """Create and save superuser"""
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('is_active', True)
+
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError(translate('Super usuario debe tener is_staff True'))
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError(translate('Super usuario debe tener is_superuser True'))
+        
+        return self.create_user(email, password, **extra_fields)
+    
+class CustomUser(AbstractBaseUser, PermissionsMixin):
+    email = models.EmailField(unique=True)
+    username = models.CharField(max_length=64)
+    first_name = models.CharField(max_length=32)
+    last_name = models.CharField(max_length=32)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    data_joined = models.DateTimeField(default=timezone.now)
+    
+    departments = models.ManyToManyField(
+        "Department",
+        related_name="users",
+        blank=True
+    )
+    phone = models.CharField(max_length=16, blank=True)
+
+    objects = UserManager()
+
+    USERNAME_FIELD = 'email' # Cambiar para que sea login con email o username
+    REQUIRED_FIELDS = ['username','first_name', 'last_name']
+
+    class Meta:
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
+        ordering = ['-data_joined']
+
+    def __str__(self):
+        return self.email
+    
+    def get_full_name(self):
+        return f'{self.first_name} {self.last_name}'.strip()
+    
+"""---------USER & SESSIONS---------"""
+
 
