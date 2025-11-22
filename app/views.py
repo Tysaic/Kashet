@@ -4,8 +4,9 @@ from django.contrib.auth.decorators import login_required
 from django.urls import reverse, reverse_lazy
 from .models import (
     Budget, BudgetFile, Bill, BillFile,
-    CategoryBill, Department
+    CategoryBill, Department, TypeTransaction, StatusTransaction
 )
+from django.db.models import Sum
 from .forms import (
     BudgetForm, BudgetFileForm, BillForm, 
     BillFileForm, CategoryBillForm, DepartmentForm,
@@ -29,9 +30,104 @@ def index (request):
         "method": request.method,
     })
     return render(request, 'index.html')
+
+
 @login_required
 def resume_budget(request):
-    return render(request, 'app/budgets/budget.html')
+    user = request.user
+    
+    # Determinar qué departamentos puede ver el usuario
+    if user.is_superuser:
+        departments = Department.objects.all()
+        budgets = Budget.objects.all()
+        bills = Bill.objects.all()
+    else:
+        departments = user.departments.all()
+        budgets = Budget.objects.filter(department__in=departments)
+        bills = Bill.objects.filter(department__in=departments)
+    
+    # Calcular totales generales
+    total_budgets = budgets.aggregate(total=Sum('total_mount'))['total'] or 0
+    total_bills = bills.aggregate(total=Sum('total_mount'))['total'] or 0
+    balance_general = total_budgets - total_bills
+    
+    # Calcular por departamento
+    departments_summary = []
+    for dept in departments:
+        dept_budgets = budgets.filter(department=dept)
+        dept_bills = bills.filter(department=dept)
+        
+        dept_total_budgets = dept_budgets.aggregate(total=Sum('total_mount'))['total'] or 0
+        dept_total_bills = dept_bills.aggregate(total=Sum('total_mount'))['total'] or 0
+        dept_balance = dept_total_budgets - dept_total_bills
+        
+        departments_summary.append({
+            'department': dept,
+            'total_budgets': dept_total_budgets,
+            'total_bills': dept_total_bills,
+            'balance': dept_balance,
+            'budgets_count': dept_budgets.count(),
+            'bills_count': dept_bills.count(),
+        })
+    
+    # Calcular por tipo de transacción
+    types_summary = []
+    for type_trans in TypeTransaction.objects.all():
+        type_budgets = budgets.filter(type=type_trans).aggregate(total=Sum('total_mount'))['total'] or 0
+        type_bills = bills.filter(type=type_trans).aggregate(total=Sum('total_mount'))['total'] or 0
+        
+        if type_budgets > 0 or type_bills > 0:
+            types_summary.append({
+                'type': type_trans,
+                'budgets': type_budgets,
+                'bills': type_bills,
+            })
+    
+    # Calcular por estado
+    status_summary = []
+    for status in StatusTransaction.objects.all():
+        status_budgets = budgets.filter(status=status).aggregate(total=Sum('total_mount'))['total'] or 0
+        status_bills = bills.filter(status=status).aggregate(total=Sum('total_mount'))['total'] or 0
+        status_count_budgets = budgets.filter(status=status).count()
+        status_count_bills = bills.filter(status=status).count()
+        
+        if status_budgets > 0 or status_bills > 0:
+            status_summary.append({
+                'status': status,
+                'budgets': status_budgets,
+                'bills': status_bills,
+                'budgets_count': status_count_budgets,
+                'bills_count': status_count_bills,
+            })
+    
+    # Últimos registros
+    recent_budgets = budgets.order_by('-created_at')[:5]
+    recent_bills = bills.order_by('-created_at')[:5]
+    
+    context = {
+        'total_budgets': total_budgets,
+        'total_bills': total_bills,
+        'balance_general': balance_general,
+        'departments_summary': departments_summary,
+        'types_summary': types_summary,
+        'status_summary': status_summary,
+        'recent_budgets': recent_budgets,
+        'recent_bills': recent_bills,
+        'budgets_count': budgets.count(),
+        'bills_count': bills.count(),
+        'departments_count': departments.count(),
+    }
+    
+    logger.info(
+        f"User {user} viewed budget resume",
+        extra={
+            "user": user,
+            "path": request.path,
+            "method": request.method,
+        }
+    )
+    
+    return render(request, 'app/budgets/budget.html', context)
 
 # -- LOGIN & LOGOUT --
 def login_view(request):

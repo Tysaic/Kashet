@@ -2,164 +2,267 @@
 {% load static %}
 {% load i18n %}
 
-{% block styles %}
-<style>
-  .budget-summary-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-  
-  .budget-amount {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-top: 0.5rem;
-  }
-  
-  @media (max-width: 768px) {
-    .budget-summary-cards {
-      grid-template-columns: 1fr;
-    }
-  }
-</style>
-{% endblock %}
-
 {% block content %}
 <div class="container-fluid">
   <!-- Page Header -->
   <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
-    <h1 class="page-title fw-semibold fs-18 mb-0">Presupuesto General</h1>
-    <div class="ms-md-1 ms-0">
-      <nav>
-        <ol class="breadcrumb mb-0">
-          <li class="breadcrumb-item"><a href="{% url 'app:index' %}">Dashboard</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Budget</li>
-        </ol>
-      </nav>
+    <h1 class="page-title fw-semibold fs-18 mb-0">{% trans "Resumen de Presupuestos" %}</h1>
+  </div>
+
+  <!-- Resumen General -->
+  <div class="row">
+    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+      <div class="card custom-card">
+        <div class="card-body">
+          <div class="d-flex align-items-start gap-3">
+            <div class="flex-fill">
+              <span class="d-block mb-2">{% trans "Total Presupuestos" %}</span>
+              <h3 class="fw-semibold mb-1 total-amount">{{ total_budgets }}</h3>
+              <span class="text-muted fs-12">{{ budgets_count }} {% trans "registros" %}</span>
+            </div>
+            <div>
+              <span class="avatar avatar-md bg-primary-transparent">
+                <i class="ri-wallet-3-line fs-20"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+      <div class="card custom-card">
+        <div class="card-body">
+          <div class="d-flex align-items-start gap-3">
+            <div class="flex-fill">
+              <span class="d-block mb-2">{% trans "Total Gastos" %}</span>
+              <h3 class="fw-semibold mb-1 total-amount text-danger">{{ total_bills }}</h3>
+              <span class="text-muted fs-12">{{ bills_count }} {% trans "registros" %}</span>
+            </div>
+            <div>
+              <span class="avatar avatar-md bg-danger-transparent">
+                <i class="ri-shopping-cart-line fs-20"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-4 col-lg-6 col-md-6 col-sm-12">
+      <div class="card custom-card">
+        <div class="card-body">
+          <div class="d-flex align-items-start gap-3">
+            <div class="flex-fill">
+              <span class="d-block mb-2">{% trans "Balance" %}</span>
+              <h3 class="fw-semibold mb-1 total-amount {% if balance_general >= 0 %}text-success{% else %}text-danger{% endif %}">
+                {{ balance_general }}
+              </h3>
+              <span class="text-muted fs-12">{{ departments_count }} {% trans "departamentos" %}</span>
+            </div>
+            <div>
+              <span class="avatar avatar-md bg-success-transparent">
+                <i class="ri-line-chart-line fs-20"></i>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- Budget Summary Cards -->
-  <div class="budget-summary-cards">
-    <div class="card custom-card card-bg-primary">
-      <div class="card-body text-center">
-        <div class="d-flex align-items-center justify-content-center mb-2">
-          <div class="avatar avatar-md bg-white-transparent me-2">
-            <i class="ti ti-trending-up fs-20"></i>
-          </div>
-          <h6 class="card-title text-white mb-0">Total Ingreso</h6>
+  <!-- Resumen por Departamento -->
+  <div class="row">
+    <div class="col-xl-12">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">{% trans "Resumen por Departamento" %}</div>
         </div>
-        <div class="budget-amount text-white">$120,000</div>
-        <small class="text-white-50">+12% vs mes anterior</small>
-      </div>
-    </div>
-
-    <div class="card custom-card card-bg-danger">
-      <div class="card-body text-center">
-        <div class="d-flex align-items-center justify-content-center mb-2">
-          <div class="avatar avatar-md bg-white-transparent me-2">
-            <i class="ti ti-trending-down fs-20"></i>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover text-nowrap">
+              <thead>
+                <tr>
+                  <th>{% trans "Departamento" %}</th>
+                  <th>{% trans "Presupuestos" %}</th>
+                  <th>{% trans "Gastos" %}</th>
+                  <th>{% trans "Balance" %}</th>
+                  <th>{% trans "Registros" %}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for dept in departments_summary %}
+                <tr>
+                  <td>
+                    <a href="{% url 'app:details_department' dept.department.id %}">
+                      {{ dept.department.name }}
+                    </a>
+                  </td>
+                  <td class="total-amount text-primary">{{ dept.total_budgets }}</td>
+                  <td class="total-amount text-danger">{{ dept.total_bills }}</td>
+                  <td class="total-amount {% if dept.balance >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    {{ dept.balance }}
+                  </td>
+                  <td>
+                    <span class="badge bg-primary-transparent">{{ dept.budgets_count }} P</span>
+                    <span class="badge bg-danger-transparent">{{ dept.bills_count }} G</span>
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center">{% trans "No hay departamentos disponibles" %}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
-          <h6 class="card-title text-white mb-0">Total Egreso</h6>
         </div>
-        <div class="budget-amount text-white">$85,000</div>
-        <small class="text-white-50">-5% vs mes anterior</small>
-      </div>
-    </div>
-
-    <div class="card custom-card card-bg-success">
-      <div class="card-body text-center">
-        <div class="d-flex align-items-center justify-content-center mb-2">
-          <div class="avatar avatar-md bg-white-transparent me-2">
-            <i class="ti ti-wallet fs-20"></i>
-          </div>
-          <h6 class="card-title text-white mb-0">Capital</h6>
-        </div>
-        <div class="budget-amount text-white">$35,000</div>
-        <small class="text-white-50">Balance disponible</small>
       </div>
     </div>
   </div>
 
-  <!-- Budget by Department -->
-  <div class="card custom-card">
-    <div class="card-header">
-      <div class="card-title">
-        Presupuesto por Departamento
+  <!-- Resumen por Estado -->
+  <div class="row">
+    <div class="col-xl-6">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">{% trans "Resumen por Estado" %}</div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover text-nowrap">
+              <thead>
+                <tr>
+                  <th>{% trans "Estado" %}</th>
+                  <th>{% trans "Presupuestos" %}</th>
+                  <th>{% trans "Gastos" %}</th>
+                  <th>{% trans "Total" %}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for status in status_summary %}
+                <tr>
+                  <td>{{ status.status.name }}</td>
+                  <td>
+                    <span class="total-amount">{{ status.budgets }}</span>
+                    <small class="text-muted">({{ status.budgets_count }})</small>
+                  </td>
+                  <td>
+                    <span class="total-amount">{{ status.bills }}</span>
+                    <small class="text-muted">({{ status.bills_count }})</small>
+                  </td>
+                  <td>{{ status.budgets_count|add:status.bills_count }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="4" class="text-center">{% trans "No hay datos disponibles" %}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="card-body">
-      <div class="table-responsive">
-        <table class="table text-nowrap">
-          <thead>
-            <tr>
-              <th scope="col">Departamento</th>
-              <th scope="col">Ingreso</th>
-              <th scope="col">Egreso</th>
-              <th scope="col">Capital</th>
-              <th scope="col">Estado</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center">
-                  <div class="avatar avatar-sm bg-primary-transparent me-2">
-                    <i class="ti ti-chart-line fs-14"></i>
-                  </div>
-                  <span class="fw-semibold">Finanzas</span>
+
+    <div class="col-xl-6">
+      <div class="card custom-card">
+        <div class="card-header">
+          <div class="card-title">{% trans "Resumen por Tipo" %}</div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-hover text-nowrap">
+              <thead>
+                <tr>
+                  <th>{% trans "Tipo" %}</th>
+                  <th>{% trans "Presupuestos" %}</th>
+                  <th>{% trans "Gastos" %}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for type in types_summary %}
+                <tr>
+                  <td>{{ type.type.name }}</td>
+                  <td class="total-amount text-primary">{{ type.budgets }}</td>
+                  <td class="total-amount text-danger">{{ type.bills }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="3" class="text-center">{% trans "No hay datos disponibles" %}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Últimos Registros -->
+  <div class="row">
+    <div class="col-xl-6">
+      <div class="card custom-card">
+        <div class="card-header d-flex justify-content-between">
+          <div class="card-title">{% trans "Últimos Presupuestos" %}</div>
+          <a href="{% url 'app:list_budget' %}" class="btn btn-sm btn-primary">{% trans "Ver todos" %}</a>
+        </div>
+        <div class="card-body">
+          <ul class="list-unstyled mb-0">
+            {% for budget in recent_budgets %}
+            <li class="mb-3 pb-3 border-bottom">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h6 class="mb-1">{{ budget.title }}</h6>
+                  <small class="text-muted">
+                    <i class="ri-building-line me-1"></i>{{ budget.department.name }}
+                  </small>
                 </div>
-              </td>
-              <td><span class="text-success fw-semibold">$50,000</span></td>
-              <td><span class="text-danger fw-semibold">$30,000</span></td>
-              <td><span class="text-primary fw-semibold">$20,000</span></td>
-              <td><span class="badge bg-success-transparent">Positivo</span></td>
-            </tr>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center">
-                  <div class="avatar avatar-sm bg-secondary-transparent me-2">
-                    <i class="ti ti-users fs-14"></i>
-                  </div>
-                  <span class="fw-semibold">Recursos Humanos</span>
+                <div class="text-end">
+                  <span class="total-amount fw-semibold">{{ budget.total_mount }}</span>
+                  <br>
+                  <small class="text-muted">{{ budget.created_at|date:"d/m/Y" }}</small>
                 </div>
-              </td>
-              <td><span class="text-success fw-semibold">$30,000</span></td>
-              <td><span class="text-danger fw-semibold">$25,000</span></td>
-              <td><span class="text-primary fw-semibold">$5,000</span></td>
-              <td><span class="badge bg-warning-transparent">Moderado</span></td>
-            </tr>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center">
-                  <div class="avatar avatar-sm bg-info-transparent me-2">
-                    <i class="ti ti-settings fs-14"></i>
-                  </div>
-                  <span class="fw-semibold">Operaciones</span>
+              </div>
+            </li>
+            {% empty %}
+            <li class="text-center text-muted">{% trans "No hay presupuestos recientes" %}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-xl-6">
+      <div class="card custom-card">
+        <div class="card-header d-flex justify-content-between">
+          <div class="card-title">{% trans "Últimos Gastos" %}</div>
+          <a href="{% url 'app:list_bills' %}" class="btn btn-sm btn-primary">{% trans "Ver todos" %}</a>
+        </div>
+        <div class="card-body">
+          <ul class="list-unstyled mb-0">
+            {% for bill in recent_bills %}
+            <li class="mb-3 pb-3 border-bottom">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h6 class="mb-1">{{ bill.title }}</h6>
+                  <small class="text-muted">
+                    <i class="ri-building-line me-1"></i>{{ bill.department.name }}
+                  </small>
                 </div>
-              </td>
-              <td><span class="text-success fw-semibold">$40,000</span></td>
-              <td><span class="text-danger fw-semibold">$30,000</span></td>
-              <td><span class="text-primary fw-semibold">$10,000</span></td>
-              <td><span class="badge bg-success-transparent">Positivo</span></td>
-            </tr>
-            <tr>
-              <td>
-                <div class="d-flex align-items-center">
-                  <div class="avatar avatar-sm bg-warning-transparent me-2">
-                    <i class="ti ti-briefcase fs-14"></i>
-                  </div>
-                  <span class="fw-semibold">Marketing</span>
+                <div class="text-end">
+                  <span class="total-amount fw-semibold text-danger">{{ bill.total_mount }}</span>
+                  <br>
+                  <small class="text-muted">{{ bill.created_at|date:"d/m/Y" }}</small>
                 </div>
-              </td>
-              <td><span class="text-success fw-semibold">$15,000</span></td>
-              <td><span class="text-danger fw-semibold">$18,000</span></td>
-              <td><span class="text-danger fw-semibold">-$3,000</span></td>
-              <td><span class="badge bg-danger-transparent">Déficit</span></td>
-            </tr>
-          </tbody>
-        </table>
+              </div>
+            </li>
+            {% empty %}
+            <li class="text-center text-muted">{% trans "No hay gastos recientes" %}</li>
+            {% endfor %}
+          </ul>
+        </div>
       </div>
     </div>
   </div>
@@ -167,4 +270,21 @@
 {% endblock %}
 
 {% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  const totalMountElements = document.querySelectorAll('.total-amount');
+
+  totalMountElements.forEach(element => {
+    const value = element.textContent.trim();
+    if(value && !isNaN(value.replace(/\./g, '').replace(',', '.'))){
+      element.textContent = formatNumber(value);
+    }
+  });
+});
+
+function formatNumber(value){
+  value = value.toString().replace(/\./g, '').replace(',', '');
+  return value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+</script>
 {% endblock %}
