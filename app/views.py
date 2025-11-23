@@ -417,14 +417,25 @@ class BillListView(LoginRequiredMixin, ListView):
         user = self.request.user
 
         if user.is_superuser:
-            return Bill.objects.all().order_by('-created_at')
+            queryset = Bill.objects.all().order_by('-created_at')
         else:
-            return Bill.objects.filter(
+            queryset = Bill.objects.filter(
                 department__in=user.departments.all()
             ).order_by('-created_at')
+        
+        category_id = self.request.GET.get('category', '0')
+        if category_id and category_id != '0':
+            if category_id == 'NULL':
+                queryset = queryset.filter(category__isnull=True)
+            elif category_id != '':  # Solo filtrar si no es vacío
+                queryset = queryset.filter(category_id=category_id)
+        
+        return queryset.order_by('-created_at')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['categories'] = CategoryBill.objects.all().order_by('id')
+        context['selected_category'] = self.request.GET.get('category', '0')
         logger.info(
             f"User {self.request.user} access bill list",
             extra={

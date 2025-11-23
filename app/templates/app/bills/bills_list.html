@@ -3,6 +3,14 @@
 {% load i18n %}
 
 {% block styles %}
+<style>
+  .filter-card {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+  }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -19,6 +27,38 @@
         </ol>
       </nav>
     </div>
+  </div>
+
+  <!-- Filtro por Categoría -->
+  <div class="card custom-card filter-card">
+    <form method="get" id="filterForm">
+      <div class="row g-3 align-items-end">
+        <div class="col-12 col-md-10">
+          <label class="form-label fw-semibold">
+            <i class="ri-price-tag-3-line me-1"></i>{% trans "Filtrar por Categoría" %}
+          </label>
+          <select name="category" class="form-select" onchange="this.form.submit()">
+            <option value="0" {% if selected_category == '0' %}selected{% endif %}>
+              {% trans "Todas las categorias" %}
+            </option>
+            <option value="NULL">
+              {% trans "Sin categoria "%}
+            </option>
+            {% for category in categories %}
+            <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
+              {{ category.name }}
+            </option>
+            {% endfor %}
+            <!-- <option value="">{% trans "Todas las categorías" %}</option> -->
+          </select>
+        </div>
+        <div class="col-12 col-md-2">
+          <a href="{% url 'app:list_bills' %}" class="btn btn-secondary w-100">
+            <i class="ri-refresh-line me-1"></i>{% trans "Limpiar" %}
+          </a>
+        </div>
+      </div>
+    </form>
   </div>
 
   <!-- Bills List -->
@@ -52,6 +92,10 @@
                   {% if bill.category %}
                   <span class="badge bg-purple-transparent">
                     <i class="ri-price-tag-3-line me-1"></i>{{ bill.category.name }}
+                  </span>
+                  {% else %}
+                  <span class="badge bg-secondary-transparent">
+                    <i class="ri-price-tag-3-line me-1"></i>{% trans "Sin categoría" %}
                   </span>
                   {% endif %}
                   <span class="badge {% if bill.status.enable %}bg-success-transparent{% else %}bg-warning-transparent{% endif %}">
@@ -90,22 +134,22 @@
       {% empty %}
       <div class="text-center py-5">
         <i class="ri-inbox-line fs-1 text-muted"></i>
-        <p class="text-muted mt-3 mb-0">{% trans "No hay gastos disponibles" %}</p>
+        <p class="text-muted mt-3 mb-0">{% trans "No hay gastos disponibles con la categoría seleccionada" %}</p>
       </div>
       {% endfor %}
 
-      <!-- Paginación (mismo código que budget_list.html) -->
+      <!-- Paginación -->
       {% if is_paginated %}
       <nav aria-label="Page navigation" class="mt-4">
         <ul class="pagination justify-content-center mb-0">
           {% if page_obj.has_previous %}
           <li class="page-item">
-            <a class="page-link" href="?page=1" aria-label="First">
+            <a class="page-link" href="?page=1{% if selected_category %}&category={{ selected_category }}{% endif %}" aria-label="First">
               <i class="ri-skip-back-line"></i>
             </a>
           </li>
           <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}" aria-label="Previous">
               <i class="ri-arrow-left-s-line"></i>
             </a>
           </li>
@@ -122,18 +166,18 @@
             {% if page_obj.number == num %}
             <li class="page-item active"><span class="page-link">{{ num }}</span></li>
             {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            <li class="page-item"><a class="page-link" href="?page={{ num }}{% if selected_category %}&category={{ selected_category }}{% endif %}">{{ num }}</a></li>
             {% endif %}
           {% endfor %}
 
           {% if page_obj.has_next %}
           <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category }}{% endif %}" aria-label="Next">
               <i class="ri-arrow-right-s-line"></i>
             </a>
           </li>
           <li class="page-item">
-            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if selected_category %}&category={{ selected_category }}{% endif %}" aria-label="Last">
               <i class="ri-skip-forward-line"></i>
             </a>
           </li>
