@@ -37,6 +37,7 @@ class Budget(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     edit = models.BooleanField(default=True)
+    is_closed = models.BooleanField(default=False)
     status = models.ForeignKey(
         'StatusTransaction',
         on_delete = models.PROTECT,

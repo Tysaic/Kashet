@@ -186,15 +186,29 @@
         </div>
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="text-muted">Estado:</span>
+            <span class="text-muted">{% trans "Estado:" %}</span>
             <span class="badge bg-success">{{ budget.status }}</span>
           </div>
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="text-muted">Archivos:</span>
+            <span class="text-muted">
+              <i class="ri-lock-line me-1"></i>{% trans "Presupuesto:" %}
+            </span>
+            {% if budget.is_closed %}
+            <span class="badge bg-danger-transparent">
+              <i class="ri-lock-line me-1"></i>{% trans "Cerrado" %}
+            </span>
+            {% else %}
+            <span class="badge bg-success-transparent">
+              <i class="ri-lock-unlock-line me-1"></i>{% trans "Abierto" %}
+            </span>
+            {% endif %}
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted">{% trans "Archivos:" %}</span>
             <strong>{{ files.count }}</strong>
           </div>
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="text-muted">Moneda:</span>
+            <span class="text-muted">{% trans "Moneda:" %}</span>
             <strong>{{ budget.currency }}</strong>
           </div>
         </div>
