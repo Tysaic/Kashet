@@ -13,6 +13,7 @@ class BudgetForm(forms.ModelForm):
         fields = [
             'title',
             'description',
+            'is_closed',
             'type',
             'status',
             'department',
@@ -31,6 +32,10 @@ class BudgetForm(forms.ModelForm):
             'type': forms.Select(attrs={'class': 'form-select', 'placeholder': translate('Ingrese tipo de gasto.')}),
             'status': forms.Select(attrs={'class': 'form-select', 'placeholder': translate('Estado del presupuesto')}),
             'department': forms.Select(attrs={'class': 'form-select', 'placeholder': translate('Ingrese aca el departamento')}),
+            'is_closed': forms.Select(
+                choices=[(False,translate('Abierta')), (True, translate('Cerrada'))],
+                attrs={'class': 'form-select'}
+            )
         }
         labels = {
             'title': translate('Titulo del Presupuesto'),
@@ -42,6 +47,7 @@ class BudgetForm(forms.ModelForm):
             'currency': translate('Moneda'),
             'due_date': translate('Fecha de tope de Presupuesto'),
             'set_date': translate('Fecha de inicio de Presupuesto'),
+            'is_closed': translate('Cerrar Caja'),
         }
 
     def __init__(self, *args, **kwargs):
@@ -126,12 +132,14 @@ class BillForm(forms.ModelForm):
         user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         
-        if user and not user.is_superuser:
-            self.fields['department'].queryset = user.departments.all()
-
+        if user.is_superuser:
+            self.fields['budget'].queryset = Budget.objects.filter(is_closed=False)
+        else:
             self.fields['budget'].queryset = Budget.objects.filter(
-                department__in=user.departments.all()
+                department__in = user.departments.all(),
+                is_closed=False
             )
+            
 
         self.fields['due_date'].input_formats = ['%Y-%m-%d'] 
         # Just new forms on budget_add

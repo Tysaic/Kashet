@@ -739,12 +739,21 @@ class DepartmentDetailsView(LoginRequiredMixin, DetailView):
     context_object_name = 'department'
     slug_field = 'id'
     slug_url_kwarg = 'id'
-
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['budgets'] = self.object.budgets.all().order_by('-created_at')[:5]
+        context['bills'] = self.object.bills.all().order_by('-created_at')[:5]
+        return context
+    
 class DepartmentCreateView(LoginRequiredMixin, CreateView):
     model = Department
     form_class = DepartmentForm
     template_name = 'app/departments/departments_add.html'
     success_url = reverse_lazy('app:list_departments')
+
+
+
 
 class DepartmentUpdateView(LoginRequiredMixin, UpdateView):
 

@@ -301,7 +301,7 @@
         </div>
         <div class="card-body p-2 p-md-3">
           {% if department.budgets.all %}
-            {% for budget in department.budgets.all|slice:":5" %}
+            {% for budget in budgets|slice:":5" %}
             <div class="card custom-card transaction-item mb-2">
               <div class="card-body p-2">
                 <div class="d-flex justify-content-between align-items-center">
@@ -346,7 +346,7 @@
         </div>
         <div class="card-body p-2 p-md-3">
           {% if department.bills.all %}
-            {% for bill in department.bills.all|slice:":5" %}
+            {% for bill in bills|slice:":5" %}
             <div class="card custom-card transaction-item mb-2">
               <div class="card-body p-2">
                 <div class="d-flex justify-content-between align-items-center">
