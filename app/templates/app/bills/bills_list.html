@@ -9,74 +9,77 @@
 <div class="container-fluid">
   <!-- Page Header -->
   <div class="d-md-flex d-block align-items-center justify-content-between my-4 page-header-breadcrumb">
-    <h1 class="page-title fw-semibold fs-18 mb-2 mb-md-0">{% trans "Detalles de Gastos" %}</h1>
+    <h1 class="page-title fw-semibold fs-18 mb-2 mb-md-0">{% trans "Lista de Gastos" %}</h1>
     <div class="ms-md-1 ms-0">
       <nav>
         <ol class="breadcrumb mb-0">
           <li class="breadcrumb-item"><a href="{% url 'app:index' %}">{% trans "Dashboard" %}</a></li>
           <li class="breadcrumb-item"><a href="{% url 'app:list_bills' %}">{% trans "Gastos" %}</a></li>
-          <li class="breadcrumb-item active" aria-current="page">{% trans "Detalles" %}</li>
+          <li class="breadcrumb-item active" aria-current="page">{% trans "Lista" %}</li>
         </ol>
       </nav>
     </div>
   </div>
 
-  <!-- Transaction List -->
+  <!-- Bills List -->
   <div class="card custom-card">
     <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
       <div class="card-title mb-2 mb-sm-0">{% trans "Lista de Gastos" %}</div>
-      <span class="badge bg-primary-transparent">{% trans "Total:" %} {{ paginator.count|default:bills.count }}</span>
+      <span class="badge bg-danger-transparent">{% trans "Total:" %} {{ paginator.count }}</span>
     </div>
     <div class="card-body p-2 p-md-3">
       
       {% for bill in bills %}
       <div class="card custom-card transaction-item mb-3">
         <div class="card-body p-2 p-sm-3">
-          <div class="d-flex align-items-start align-items-md-center flex-column flex-md-row transaction-info">
-            <!-- Image/Icon Section -->
-            <div class="d-flex align-items-center mb-2 mb-md-0 w-100 w-md-auto">
-              {% if bill.upload_folders.first %}
-                <img src="{{bill.upload_folders.first.file.url}}" alt="{% trans 'Archivo' %}" class="transaction-image me-3 flex-shrink-0">
-              {% else %}
-                <div class="transaction-image me-3 flex-shrink-0 d-flex align-items-center justify-content-center bg-light rounded">
-                  <i class="ri-file-unknow-line fs-5 text-muted"></i>
-                </div>
-              {% endif %}
-              
-              <!-- Info Section -->
-              <div class="flex-grow-1 overflow-hidden">
-                <h6 class="mb-1 fw-semibold text-break">{{ bill.title }}</h6>
-                <p class="text-muted mb-1 fs-12 text-truncate-2">{{ bill.description }}</p>
+          <div class="d-flex align-items-start flex-column flex-md-row">
+            <!-- Icon Section -->
+            <div class="d-flex align-items-center mb-3 mb-md-0">
+              <span class="avatar avatar-md bg-danger-transparent me-3">
+                <i class="ri-shopping-cart-line fs-20"></i>
+              </span>
+              <div class="flex-fill">
+                <h6 class="mb-1 fw-semibold">
+                  <a href="{% url 'app:detail_bill' bill.identifier %}" class="text-dark">{{ bill.title }}</a>
+                </h6>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
-                  <small class="text-muted">
-                    <i class="ri-calendar-line me-1"></i>{{ bill.created_at|date:"d/m/Y" }}
-                  </small>
-                  {% if bill.due_date %}
-                  <small class="text-muted">
-                    <i class="ri-time-line me-1"></i>{{ bill.due_date|date:"d/m/Y" }}
-                  </small>
+                  <span class="badge bg-primary-transparent">
+                    <i class="ri-building-line me-1"></i>{{ bill.department.name }}
+                  </span>
+                  <span class="badge bg-info-transparent">
+                    <i class="ri-exchange-line me-1"></i>{{ bill.type.name }}
+                  </span>
+                  {% if bill.category %}
+                  <span class="badge bg-purple-transparent">
+                    <i class="ri-price-tag-3-line me-1"></i>{{ bill.category.name }}
+                  </span>
                   {% endif %}
-                  <small class="text-muted">
-                    <i class="ri-building-line me-1"></i><span class="badge bg-purple-transparent">{{ bill.department.name }}</span>
-                  </small>
+                  <span class="badge {% if bill.status.enable %}bg-success-transparent{% else %}bg-warning-transparent{% endif %}">
+                    <i class="ri-checkbox-circle-line me-1"></i>{{ bill.status.name }}
+                  </span>
                 </div>
+                <small class="text-muted d-block mt-1">
+                  <i class="ri-wallet-line me-1"></i>{% trans "Presupuesto:" %} {{ bill.budget.title|truncatechars:30 }}
+                  <span class="mx-2">|</span>
+                  <i class="ri-calendar-check-line me-1"></i>{% trans "Vence:" %} {{ bill.due_date|date:"d/m/Y" }}
+                </small>
               </div>
             </div>
             
             <!-- Amount and Actions Section -->
-            <div class="d-flex justify-content-between align-items-center w-100 ms-md-3 mt-2 mt-md-0">
-              <div class="text-start text-md-end me-2 me-md-3">
-                <div class="transaction-amount expense fw-bold">{{ bill.total_mount }}</div>
-                <span class="badge bg-danger-transparent">{{ bill.get_type_display }}</span>
-              </div>
-              
-              <div class="transaction-actions ms-auto">
-                <a href="{% url 'app:detail_bill' bill.identifier %}" class="btn btn-sm btn-primary">
-                  <i class="ri-eye-line"></i><span class="d-none d-sm-inline ms-1">{% trans "Ver" %}</span>
+            <div class="d-flex flex-column align-items-md-end ms-md-auto mt-2 mt-md-0">
+              <h5 class="mb-2 fw-semibold text-danger transaction-amount">{{ bill.total_mount }}</h5>
+              <small class="text-muted mb-2">{{ bill.currency.code }}</small>
+              <div class="btn-group btn-group-sm" role="group">
+                <a href="{% url 'app:detail_bill' bill.identifier %}" class="btn btn-primary-light" title="{% trans 'Ver detalles' %}">
+                  <i class="ri-eye-line"></i>
                 </a>
                 {% if bill.edit %}
-                <a href="{% url 'app:update_bill' bill.identifier %}" class="btn btn-sm btn-primary">
-                  <i class="ri-edit-line me-1"></i><span class="d-none d-sm-inline">{% trans "Editar" %}</span>
+                <a href="{% url 'app:update_bill' bill.identifier %}" class="btn btn-info-light" title="{% trans 'Editar' %}">
+                  <i class="ri-edit-line"></i>
+                </a>
+                <a href="{% url 'app:delete_bill' bill.identifier %}" class="btn btn-danger-light" title="{% trans 'Eliminar' %}">
+                  <i class="ri-delete-bin-line"></i>
                 </a>
                 {% endif %}
               </div>
@@ -91,6 +94,68 @@
       </div>
       {% endfor %}
 
+      <!-- Paginación (mismo código que budget_list.html) -->
+      {% if is_paginated %}
+      <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center mb-0">
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1" aria-label="First">
+              <i class="ri-skip-back-line"></i>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+              <i class="ri-arrow-left-s-line"></i>
+            </a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <span class="page-link"><i class="ri-skip-back-line"></i></span>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link"><i class="ri-arrow-left-s-line"></i></span>
+          </li>
+          {% endif %}
+
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+          {% endfor %}
+
+          {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+              <i class="ri-arrow-right-s-line"></i>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+              <i class="ri-skip-forward-line"></i>
+            </a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <span class="page-link"><i class="ri-arrow-right-s-line"></i></span>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link"><i class="ri-skip-forward-line"></i></span>
+          </li>
+          {% endif %}
+        </ul>
+        
+        <div class="text-center mt-3">
+          <small class="text-muted">
+            {% trans "Mostrando" %} {{ page_obj.start_index }} - {{ page_obj.end_index }} 
+            {% trans "de" %} {{ paginator.count }} {% trans "resultados" %}
+          </small>
+        </div>
+      </nav>
+      {% endif %}
+
     </div>
   </div>
 </div>
@@ -99,7 +164,6 @@
 {% block scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', function(){
-
   const totalMountElements = document.querySelectorAll('.transaction-amount');
 
   totalMountElements.forEach(element => {
@@ -109,7 +173,6 @@ document.addEventListener('DOMContentLoaded', function(){
 
 function formatNumber(value){
     value = value.replace(/\./g, '');
-
     return value.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
 }
 </script>

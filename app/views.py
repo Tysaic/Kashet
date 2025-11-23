@@ -168,15 +168,26 @@ class BudgetListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        query_set = super().get_queryset().select_related("department")
         user = self.request.user
 
-
         if user.is_superuser:
-            return query_set
-        
-        #return Budget.objects.all().order_by('-created_at')
-        return query_set.filter(department__in = user.departments.all())
+            return Budget.objects.all().order_by('-created_at')
+        else:
+            return Budget.objects.filter(
+                department__in= user.departments.all()
+            ).order_by('-created_at')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        logger.info(
+            f"User {self.request.user} access budget list",
+            extra={
+                "user": self.request.user,
+                "path": self.request.path,
+                "method": self.request.method
+            }
+        )
+        return context
 
 class BudgetCreateView(LoginRequiredMixin, CreateView):
     model = Budget
@@ -403,15 +414,26 @@ class BillListView(LoginRequiredMixin, ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        query_set = super().get_queryset().select_related("department")
         user = self.request.user
 
-
         if user.is_superuser:
-            return query_set
-        
-        #return Bill.objects.all().order_by('-created_at')
-        return query_set.filter(department__in = user.departments.all())
+            return Bill.objects.all().order_by('-created_at')
+        else:
+            return Bill.objects.filter(
+                department__in=user.departments.all()
+            ).order_by('-created_at')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        logger.info(
+            f"User {self.request.user} access bill list",
+            extra={
+                "user": self.request.user,
+                "path": self.request.path,
+                "method": self.request.method
+            }
+        )
+        return context
         
 
 class BillCreateView(LoginRequiredMixin, CreateView):
@@ -533,7 +555,7 @@ class BillUpdateView(LoginRequiredMixin, UpdateView):
         #Uploading new files
         for new_file in new_files:
             logger.info(
-                f'{new_file} files add to Budget: "{self.object.title}" by {self.request.user if self.request.user else "Anom"}',
+                f'{new_file} files add to Bill: "{self.object.title}" by {self.request.user if self.request.user else "Anom"}',
                 extra={
                     "user": self.request.user if self.request.user.is_authenticated else None,
                     "path": self.request.path,
@@ -541,7 +563,7 @@ class BillUpdateView(LoginRequiredMixin, UpdateView):
                     "extra_data": {"identifier": str(self.object.identifier)},
                 }
             )
-            BillFile.objects.create(budget=self.object, file=new_file)
+            BillFile.objects.create(bill=self.object, file=new_file)
         
         # Validing the form when editing
         form = self.form_class(request.POST, instance=self.object, user=request.user)

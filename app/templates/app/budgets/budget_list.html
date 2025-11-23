@@ -25,58 +25,60 @@
   <div class="card custom-card">
     <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
       <div class="card-title mb-2 mb-sm-0">{% trans "Lista de Transacciones" %}</div>
-      <span class="badge bg-primary-transparent">{% trans "Total:" %} {{ paginator.count|default:budgets.count }}</span>
+      <span class="badge bg-primary-transparent">{% trans "Total:" %} {{ paginator.count }}</span>
     </div>
     <div class="card-body p-2 p-md-3">
       
       {% for budget in budgets %}
       <div class="card custom-card transaction-item mb-3">
         <div class="card-body p-2 p-sm-3">
-          <div class="d-flex align-items-start align-items-md-center flex-column flex-md-row transaction-info">
-            <!-- Image/Icon Section -->
-            <div class="d-flex align-items-center mb-2 mb-md-0 w-100 w-md-auto">
-              {% if budget.upload_folders.first %}
-                <img src="{{budget.upload_folders.first.file.url}}" alt="{% trans 'Archivo' %}" class="transaction-image me-3 flex-shrink-0">
-              {% else %}
-                <div class="transaction-image me-3 flex-shrink-0 d-flex align-items-center justify-content-center bg-light rounded">
-                  <i class="ri-file-unknow-line fs-5 text-muted"></i>
-                </div>
-              {% endif %}
-              
-              <!-- Info Section -->
-              <div class="flex-grow-1 overflow-hidden">
-                <h6 class="mb-1 fw-semibold text-break">{{ budget.title }}</h6>
-                <p class="text-muted mb-1 fs-12 text-truncate-2">{{ budget.description }}</p>
+          <div class="d-flex align-items-start flex-column flex-md-row">
+            <!-- Icon Section -->
+            <div class="d-flex align-items-center mb-3 mb-md-0">
+              <span class="avatar avatar-md bg-primary-transparent me-3">
+                <i class="ri-wallet-3-line fs-20"></i>
+              </span>
+              <div class="flex-fill">
+                <h6 class="mb-1 fw-semibold">
+                  <a href="{% url 'app:detail_budget' budget.identifier %}" class="text-dark">{{ budget.title }}</a>
+                </h6>
                 <div class="d-flex flex-wrap gap-2 align-items-center">
-                  <small class="text-muted">
-                    <i class="ri-calendar-line me-1"></i>{{ budget.created_at|date:"d/m/Y" }}
-                  </small>
-                  {% if budget.due_date %}
-                  <small class="text-muted">
-                    <i class="ri-time-line me-1"></i>{{ budget.due_date|date:"d/m/Y" }}
-                  </small>
-                  {% endif %}
-                  <small class="text-muted">
-                    <i class="ri-building-line me-1"></i><span class="badge bg-purple-transparent">{{ budget.department.name }}</span>
-                  </small>
+                  <span class="badge bg-primary-transparent">
+                    <i class="ri-building-line me-1"></i>{{ budget.department.name }}
+                  </span>
+                  <span class="badge bg-info-transparent">
+                    <i class="ri-exchange-line me-1"></i>{{ budget.type.name }}
+                  </span>
+                  <span class="badge {% if budget.status.enable %}bg-success-transparent{% else %}bg-warning-transparent{% endif %}">
+                    <i class="ri-checkbox-circle-line me-1"></i>{{ budget.status.name }}
+                  </span>
                 </div>
+                <small class="text-muted d-block mt-1">
+                  <i class="ri-calendar-line me-1"></i>{% trans "Inicio:" %} {{ budget.set_date|date:"d/m/Y" }}
+                  <span class="mx-2">|</span>
+                  <i class="ri-calendar-check-line me-1"></i>{% trans "Vence:" %} {{ budget.due_date|date:"d/m/Y" }}
+                </small>
               </div>
             </div>
             
             <!-- Amount and Actions Section -->
-            <div class="d-flex justify-content-between align-items-center w-100 ms-md-3 mt-2 mt-md-0">
-              <div class="text-start text-md-end me-2 me-md-3">
-                <div class="transaction-amount income fw-bold"> {% trans "Monto:" %} {{ budget.total_mount }}</div>
-                <span class="badge bg-success-transparent">{{ budget.get_type_display }}</span>
-              </div>
-              
-              <div class="transaction-actions ms-auto">
-                <a href="{% url 'app:detail_budget' budget.identifier %}" class="btn btn-sm btn-primary">
-                  <i class="ri-eye-line"></i><span class="d-none d-sm-inline ms-1">{% trans "Ver" %}</span>
+            <div class="d-flex flex-column align-items-md-end ms-md-auto mt-2 mt-md-0">
+              <h5 class="mb-2 fw-semibold text-primary transaction-amount">{{ budget.total_mount }}</h5>
+              <small class="text-muted mb-2">{{ budget.currency.code }}</small>
+              <div class="btn-group btn-group-sm" role="group">
+                <a href="{% url 'app:detail_budget' budget.identifier %}" class="btn btn-primary-light" title="{% trans 'Ver detalles' %}">
+                  <i class="ri-eye-line"></i>
                 </a>
-                <a href="{% url 'app:update_budget' budget.identifier %}" class="btn btn-sm btn-primary">
-                  <i class="ri-edit-line me-1"></i><span class="d-none d-sm-inline">{% trans "Editar" %}</span>
+                {% if budget.edit %}
+                <a href="{% url 'app:update_budget' budget.identifier %}" class="btn btn-info-light" title="{% trans 'Editar' %}">
+                  <i class="ri-edit-line"></i>
                 </a>
+                {% if not budget.has_bills %}
+                <a href="{% url 'app:delete_budget' budget.identifier %}" class="btn btn-danger-light" title="{% trans 'Eliminar' %}">
+                  <i class="ri-delete-bin-line"></i>
+                </a>
+                {% endif %}
+                {% endif %}
               </div>
             </div>
           </div>
@@ -88,6 +90,72 @@
         <p class="text-muted mt-3 mb-0">{% trans "No hay presupuestos disponibles" %}</p>
       </div>
       {% endfor %}
+
+      <!-- Paginación -->
+      {% if is_paginated %}
+      <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center mb-0">
+          <!-- Botón Primera Página -->
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page=1" aria-label="First">
+              <i class="ri-skip-back-line"></i>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+              <i class="ri-arrow-left-s-line"></i>
+            </a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <span class="page-link"><i class="ri-skip-back-line"></i></span>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link"><i class="ri-arrow-left-s-line"></i></span>
+          </li>
+          {% endif %}
+
+          <!-- Números de página -->
+          {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+          {% endfor %}
+
+          <!-- Botón Última Página -->
+          {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+              <i class="ri-arrow-right-s-line"></i>
+            </a>
+          </li>
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+              <i class="ri-skip-forward-line"></i>
+            </a>
+          </li>
+          {% else %}
+          <li class="page-item disabled">
+            <span class="page-link"><i class="ri-arrow-right-s-line"></i></span>
+          </li>
+          <li class="page-item disabled">
+            <span class="page-link"><i class="ri-skip-forward-line"></i></span>
+          </li>
+          {% endif %}
+        </ul>
+        
+        <!-- Información de páginas -->
+        <div class="text-center mt-3">
+          <small class="text-muted">
+            {% trans "Mostrando" %} {{ page_obj.start_index }} - {{ page_obj.end_index }} 
+            {% trans "de" %} {{ paginator.count }} {% trans "resultados" %}
+          </small>
+        </div>
+      </nav>
+      {% endif %}
 
     </div>
   </div>
